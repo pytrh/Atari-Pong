@@ -4,7 +4,7 @@ import numpy as np
 
 from gymnasium.wrappers import FrameStackObservation, FlattenObservation
 
-from dqn_basic import DQNAgent
+from dqn import DQNAgent
 
 import matplotlib.pyplot as plt
 import torch
@@ -15,7 +15,7 @@ import os
 save_policy = True       # Enable/Disable saving
 save_every = 300        # Save every X episodes
 PARAM = "test_numero_42_"  # Description of the parameters
-save_path = "policies/lunar_" + PARAM
+save_path = "policies/pong_" + PARAM
 add_info = {}
 
 # Create policies directory if it doesn't exist
@@ -52,7 +52,7 @@ agent = DQNAgent(
 
 
 episodes = 1000
-render_every = 200
+render_every = 5000
 how_much_to_render = 3
 rewards = []
 
@@ -78,9 +78,13 @@ for episode in range(episodes):
         next_state, reward, terminated, truncated, _ = env.step(action)
         done = terminated or truncated
 
+        # Store transition and train on batches
         agent.update(state, action, reward, next_state, done)
         state = next_state
         total_reward += reward
+    
+    # Decay epsilon after episode
+    agent.decay_epsilon()
     
     avg_rewards += 1/ (number_episodes + 1) * (total_reward - avg_rewards)
     if number_episodes > 100:
