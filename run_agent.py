@@ -13,35 +13,35 @@ import torch
 save_policy = True       # Enable/Disable saving
 save_every = 300        # Save every X episodes
 PARAM = "test_numero_42_"  # Description of the parameters
-# save_path = "policies/pong_" + PARAM
-save_path = "policies/lunar_lander_" + PARAM
+save_path = "policies/pong_" + PARAM
+# save_path = "policies/lunar_lander_" + PARAM
 add_info = {}
 
 
 # ------------------ Environment and Agent Setup ------------------
 
-env_name = 'LunarLander-v3'
-env = gym.make(env_name)
+# env_name = 'LunarLander-v3'
+# env = gym.make(env_name)
 
-# gym.register_envs(ale_py)
-# env_name = 'ALE/Pong-v5'
-# add_info = {'obs_type': "ram"}
+gym.register_envs(ale_py)
+env_name = 'ALE/Pong-v5'
+add_info = {'obs_type': "ram"}
 
-# env = gym.make(env_name, render_mode="human", **add_info)
-# env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-# env = FlattenObservation(env)
+env = gym.make(env_name, render_mode="human", **add_info)
+env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+env = FlattenObservation(env)
 
 agent = DQNAgent(
     env,
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.995,
+    epsilon_decay=0.999,
     min_epsilon=0.01
 )
 
 
-episodes = 1000
+episodes = 100000
 render_every = 200
 how_much_to_render = 1
 rewards = []
@@ -57,8 +57,8 @@ for episode in range(episodes):
     else:
         env = gym.make(env_name, **add_info)
 
-    # env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-    # env = FlattenObservation(env)
+    env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+    env = FlattenObservation(env)
     
     state, _ = env.reset()
     done = False
