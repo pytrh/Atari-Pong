@@ -1,4 +1,6 @@
 import gymnasium as gym
+import ale_py
+from gymnasium.wrappers import FrameStackObservation, FlattenObservation
 import numpy as np
 
 from dqn_basic import DQNAgent
@@ -11,15 +13,19 @@ import torch
 save_policy = True       # Enable/Disable saving
 save_every = 300        # Save every X episodes
 PARAM = "test_numero_42_"  # Description of the parameters
-save_path = "policies/lunar_" + PARAM
+save_path = "policies/pong_" + PARAM
 add_info = {}
 
 
 # ------------------ Environment and Agent Setup ------------------
 
-env_name = "LunarLander-v3"
-env = gym.make(env_name)
+gym.register_envs(ale_py)
+env_name = 'ALE/Pong-v5'
+add_info = {'obs_type': "ram"}
 
+env = gym.make(env_name, render_mode="human", **add_info)
+env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+env = FlattenObservation(env)
 
 agent = DQNAgent(
     env,
@@ -32,8 +38,8 @@ agent = DQNAgent(
 
 
 episodes = 1000
-render_every = 200
-how_much_to_render = 3
+render_every = 1000
+how_much_to_render = 1
 rewards = []
 
 
@@ -47,6 +53,9 @@ for episode in range(episodes):
     else:
         env = gym.make(env_name, **add_info)
 
+    env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+    env = FlattenObservation(env)
+    
     state, _ = env.reset()
     done = False
     total_reward = 0
@@ -89,5 +98,5 @@ avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewar
 plt.plot(avg_rewards)
 plt.xlabel("Episode")
 plt.ylabel("Average Reward (100 ep)")
-plt.title("Monte Carlo on CartPole (Barto-style Discretization)")
+plt.title("DQN on Pong")
 plt.show()
