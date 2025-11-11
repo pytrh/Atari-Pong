@@ -58,7 +58,7 @@ class DQNAgent:
         
         # Target network update parameters
         self.update_counter = 0
-        self.target_update_frequency = 4000  # Update target network every 10000 updates
+        self.target_update_frequency = 1000  # Update target network every 10000 updates
 
     def play(self, state):
         state_tensor = torch.FloatTensor(state).unsqueeze(0)  # [1, state_dim]
