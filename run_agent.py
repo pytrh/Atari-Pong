@@ -98,5 +98,5 @@ avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewar
 plt.plot(avg_rewards)
 plt.xlabel("Episode")
 plt.ylabel("Average Reward (100 ep)")
-plt.title("DQN on Pong")
+plt.title("Basic DQN on Pong")
 plt.show()

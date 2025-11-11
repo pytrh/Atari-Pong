@@ -33,7 +33,7 @@ class DQNAgent:
         self.action_dim = env.action_space.n
         
         self.q_network = DQN(self.state_dim, self.action_dim)
-        self.optimizer = optim.Adam(self.q_network.parameters(), lr=alpha)
+        self.optimizer = optim.RMSprop(self.q_network.parameters(), lr=alpha)
         self.loss_fn = nn.MSELoss()
 
     def play(self, state):
