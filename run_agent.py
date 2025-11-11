@@ -13,19 +13,23 @@ import torch
 save_policy = True       # Enable/Disable saving
 save_every = 300        # Save every X episodes
 PARAM = "test_numero_42_"  # Description of the parameters
-save_path = "policies/pong_" + PARAM
+# save_path = "policies/pong_" + PARAM
+save_path = "policies/lunar_lander_" + PARAM
 add_info = {}
 
 
 # ------------------ Environment and Agent Setup ------------------
 
-gym.register_envs(ale_py)
-env_name = 'ALE/Pong-v5'
-add_info = {'obs_type': "ram"}
+env_name = 'LunarLander-v3'
+env = gym.make(env_name)
 
-env = gym.make(env_name, render_mode="human", **add_info)
-env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-env = FlattenObservation(env)
+# gym.register_envs(ale_py)
+# env_name = 'ALE/Pong-v5'
+# add_info = {'obs_type': "ram"}
+
+# env = gym.make(env_name, render_mode="human", **add_info)
+# env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+# env = FlattenObservation(env)
 
 agent = DQNAgent(
     env,
@@ -38,8 +42,8 @@ agent = DQNAgent(
 
 
 episodes = 1000
-render_every = 1000
-how_much_to_render = 1
+render_every = 200
+how_much_to_render = 3
 rewards = []
 
 
@@ -53,8 +57,8 @@ for episode in range(episodes):
     else:
         env = gym.make(env_name, **add_info)
 
-    env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-    env = FlattenObservation(env)
+    # env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+    # env = FlattenObservation(env)
     
     state, _ = env.reset()
     done = False
@@ -98,5 +102,5 @@ avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewar
 plt.plot(avg_rewards)
 plt.xlabel("Episode")
 plt.ylabel("Average Reward (100 ep)")
-plt.title("Basic DQN on Pong")
+plt.title("DQN")
 plt.show()
