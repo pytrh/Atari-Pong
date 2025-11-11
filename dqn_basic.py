@@ -122,7 +122,8 @@ class PrioritizedReplayBuffer:
 class DQNAgent:
     def __init__(self, env, gamma=0.95, alpha=0.001, epsilon=0.1, epsilon_decay=0.995, 
                  min_epsilon=0.01, replay_buffer_size=10000, batch_size=32,
-                 per_alpha=0.6, per_beta=0.4, per_beta_increment=1e-6):
+                 per_alpha=0.6, per_beta=0.4, per_beta_increment=1e-6,
+                 target_update_frequency=1000):
         self.env = env
         self.gamma = gamma
         self.epsilon = epsilon
@@ -130,11 +131,17 @@ class DQNAgent:
         self.min_epsilon = min_epsilon
         self.actions = range(env.action_space.n)
         self.batch_size = batch_size
+        self.target_update_frequency = target_update_frequency
+        self.train_step_count = 0
 
         self.state_dim = env.observation_space.shape[0]
         self.action_dim = env.action_space.n
         
         self.q_network = DQN(self.state_dim, self.action_dim)
+        # Create target network as a duplicate of the main network
+        self.target_network = DQN(self.state_dim, self.action_dim)
+        self.update_target_network()  # Initialize target network with same weights
+        
         self.optimizer = optim.RMSprop(self.q_network.parameters(), lr=alpha)
         self.loss_fn = nn.MSELoss(reduction='none')  # No reduction for IS weighting
         
@@ -163,6 +170,10 @@ class DQNAgent:
         """Store experience in replay buffer (for backward compatibility)."""
         self.store(state, action, reward, next_state, done)
     
+    def update_target_network(self):
+        """Copy weights from main Q-network to target network."""
+        self.target_network.load_state_dict(self.q_network.state_dict())
+    
     def train(self):
         """Train the network on a batch of experiences from the prioritized replay buffer."""
         if len(self.replay_buffer) < self.batch_size:
@@ -172,9 +183,9 @@ class DQNAgent:
         states, actions, rewards, next_states, dones, indices, is_weights = \
             self.replay_buffer.sample(self.batch_size)
         
-        # Compute target Q-values
+        # Compute target Q-values using target network
         with torch.no_grad():
-            next_q_values = self.q_network(next_states)
+            next_q_values = self.target_network(next_states)
             max_next_q = torch.max(next_q_values, dim=1)[0]
             target_q = rewards + (~dones).float() * self.gamma * max_next_q
         
@@ -198,6 +209,11 @@ class DQNAgent:
         
         # Update priorities in replay buffer based on TD errors
         self.replay_buffer.update_priorities(indices, td_errors)
+        
+        # Update target network periodically
+        self.train_step_count += 1
+        if self.train_step_count % self.target_update_frequency == 0:
+            self.update_target_network()
         
         return weighted_loss.item()
     
