@@ -43,7 +43,7 @@ agent = DQNAgent(
 
 episodes = 1000
 render_every = 200
-how_much_to_render = 3
+how_much_to_render = 1
 rewards = []
 
 
