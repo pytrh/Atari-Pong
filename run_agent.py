@@ -69,7 +69,16 @@ for episode in range(episodes):
         next_state, reward, terminated, truncated, _ = env.step(action)
         done = terminated or truncated
 
-        agent.update(state, action, reward, next_state, done)
+        # Store experience in replay buffer
+        agent.store(state, action, reward, next_state, done)
+        
+        # Train on a batch from replay buffer
+        agent.train()
+        
+        # Decay epsilon when done is True (not at end of episode)
+        if done:
+            agent.decay_epsilon()
+        
         state = next_state
         total_reward += reward
     
@@ -80,7 +89,7 @@ for episode in range(episodes):
         number_episodes = 0
     number_episodes += 1
 
-    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Epsilon: {agent.epsilon:.3f} | Total Reward: {total_reward:.2f}")
+    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Epsilon: {agent.epsilon:.3f} | Total Reward: {total_reward:.2f} | Buffer Size: {len(agent.replay_buffer)}")
     rewards.append(total_reward)
 
     # ---- Save policy periodically ----
