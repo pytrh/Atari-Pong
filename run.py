@@ -14,9 +14,8 @@ from datetime import datetime
 
 
 # --------- Policy Loading/Resuming ---------
-load_policy = False  # Set to True to resume training from a saved policy
-policy_path = "policies/pong_test_numero_42_avg-20_ep300.pth"  # Path to saved policy
-load_optimizer = False  # Set to True to also load optimizer state (if saved)
+load_policy = True  # Set to True to auto-detect and resume from best policy's checkpoint
+load_optimizer = True  # Set to True to also load optimizer state (if saved)
 
 # --------- Saving Policy ---------
 save_policy = True       # Enable/Disable saving
@@ -55,27 +54,72 @@ agent = DQNAgent(
     min_epsilon=0.01
 )
 
-# Load policy if specified
+# Auto-detect and load best policy's checkpoint
 start_episode = 0
 best_avg_reward = float('-inf')
 
-if load_policy and os.path.exists(policy_path):
-    agent.q_network.load_state_dict(torch.load(policy_path))
-    agent.target_network.load_state_dict(torch.load(policy_path))
-    print(f"✅ Loaded policy from {policy_path}")
+def find_most_recent_best_policy():
+    """Find the most recent best policy file and return its path and timestamp"""
+    if not os.path.exists("policies"):
+        return None, None
     
-    # Try to load checkpoint for full resume
-    if os.path.exists(checkpoint_path):
-        checkpoint = torch.load(checkpoint_path)
-        agent.q_network.load_state_dict(checkpoint['q_network_state_dict'])
-        agent.target_network.load_state_dict(checkpoint['target_network_state_dict'])
-        if load_optimizer and 'optimizer_state_dict' in checkpoint:
-            agent.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        start_episode = checkpoint.get('episode', 0)
-        best_avg_reward = checkpoint.get('best_avg_reward', float('-inf'))
-        agent.update_counter = checkpoint.get('update_counter', 0)
-        agent.per_beta = checkpoint.get('per_beta', agent.per_beta)
-        print(f"✅ Loaded full checkpoint from episode {start_episode}, best reward: {best_avg_reward:.2f}")
+    # Pattern: pong_{PARAM}{timestamp}_best.pth
+    pattern = f"pong_{PARAM}"
+    best_policies = []
+    
+    for filename in os.listdir("policies"):
+        if filename.startswith(pattern) and filename.endswith("_best.pth"):
+            filepath = os.path.join("policies", filename)
+            # Extract timestamp: between PARAM and "_best"
+            # Format: pong_{PARAM}{timestamp}_best.pth
+            prefix_len = len(pattern)
+            suffix = "_best.pth"
+            if len(filename) > prefix_len + len(suffix):
+                timestamp = filename[prefix_len:-len(suffix)]
+                mtime = os.path.getmtime(filepath)
+                best_policies.append((filepath, timestamp, mtime))
+    
+    if not best_policies:
+        return None, None
+    
+    # Sort by modification time (most recent first)
+    best_policies.sort(key=lambda x: x[2], reverse=True)
+    return best_policies[0][0], best_policies[0][1]  # Return path and timestamp
+
+if load_policy:
+    best_policy_file, detected_timestamp = find_most_recent_best_policy()
+    
+    if best_policy_file and detected_timestamp:
+        # Find corresponding checkpoint
+        detected_checkpoint = f"policies/pong_{PARAM}{detected_timestamp}_checkpoint.pth"
+        
+        if os.path.exists(detected_checkpoint):
+            print(f"🔍 Found best policy: {best_policy_file}")
+            print(f"🔍 Found corresponding checkpoint: {detected_checkpoint}")
+            
+            checkpoint = torch.load(detected_checkpoint, map_location='cpu')
+            agent.q_network.load_state_dict(checkpoint['q_network_state_dict'])
+            agent.target_network.load_state_dict(checkpoint['target_network_state_dict'])
+            
+            if load_optimizer and 'optimizer_state_dict' in checkpoint:
+                agent.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+                print("✅ Loaded optimizer state")
+            
+            start_episode = checkpoint.get('episode', 0)
+            best_avg_reward = checkpoint.get('best_avg_reward', float('-inf'))
+            agent.update_counter = checkpoint.get('update_counter', 0)
+            agent.per_beta = checkpoint.get('per_beta', agent.per_beta)
+            agent.epsilon = checkpoint.get('epsilon', agent.epsilon)
+            
+            print(f"✅ Resumed from checkpoint: Episode {start_episode}, Best Reward: {best_avg_reward:.2f}, Epsilon: {agent.epsilon:.3f}")
+        else:
+            # Fallback: load just the best policy (no checkpoint found)
+            print(f"⚠️ Checkpoint not found for {detected_timestamp}, loading best policy only")
+            agent.q_network.load_state_dict(torch.load(best_policy_file, map_location='cpu'))
+            agent.target_network.load_state_dict(torch.load(best_policy_file, map_location='cpu'))
+            print(f"✅ Loaded best policy from {best_policy_file}")
+    else:
+        print("ℹ️ No previous best policy found, starting fresh training")
 
 
 episodes = 100000
