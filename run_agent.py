@@ -13,23 +13,23 @@ import torch
 save_policy = True       # Enable/Disable saving
 save_every = 300        # Save every X episodes
 PARAM = "test_numero_42_"  # Description of the parameters
-save_path = "policies/pong_" + PARAM
-# save_path = "policies/lunar_lander_" + PARAM
+# save_path = "policies/pong_" + PARAM
+save_path = "policies/lunar_lander_" + PARAM
 add_info = {}
 
 
 # ------------------ Environment and Agent Setup ------------------
 
-# env_name = 'LunarLander-v3'
-# env = gym.make(env_name)
+env_name = 'LunarLander-v3'
+env = gym.make(env_name)
 
-gym.register_envs(ale_py)
-env_name = 'ALE/Pong-v5'
-add_info = {'obs_type': "ram"}
-
-env = gym.make(env_name, render_mode="human", **add_info)
-env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-env = FlattenObservation(env)
+# gym.register_envs(ale_py)
+# env_name = 'ALE/Pong-v5'
+# add_info = {'obs_type': "ram"}
+# 
+# env = gym.make(env_name, render_mode="human", **add_info)
+# env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+# env = FlattenObservation(env)
 
 agent = DQNAgent(
     env,
@@ -57,8 +57,8 @@ for episode in range(episodes):
     else:
         env = gym.make(env_name, **add_info)
 
-    env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-    env = FlattenObservation(env)
+#    env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+#    env = FlattenObservation(env)
     
     state, _ = env.reset()
     done = False
@@ -88,12 +88,15 @@ for episode in range(episodes):
     if save_policy and episode % save_every == 0 and episode > 0:
         if hasattr(agent, "q_network"):
             torch.save(agent.q_network.state_dict(), save_path_2)
-            print(f"✅ Policy (q_network) saved at episode {episode} -> {save_path_2}")
+            #print(f"✅ Policy (q_network) saved at episode {episode} -> {save_path_2}")
+            print(f"Policy (q_network) saved at episode {episode} -> {save_path_2}")
         elif hasattr(agent, "model"):
             torch.save(agent.model.state_dict(), save_path_2)
-            print(f"✅ Policy (model) saved at episode {episode} -> {save_path_2}")
+            #print(f"✅ Policy (model) saved at episode {episode} -> {save_path_2}")
+            print(f"Policy (model) saved at episode {episode} -> {save_path_2}")
         else:
-            print("⚠️ No neural network found in agent, skipping save...")
+            #print("⚠️ No neural network found in agent, skipping save...")
+            print("No neural network found in agent, skipping save...")
 
     env.close()
 
