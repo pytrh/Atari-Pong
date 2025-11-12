@@ -2,6 +2,7 @@ import gymnasium as gym
 import ale_py
 from gymnasium.wrappers import FrameStackObservation, FlattenObservation
 import numpy as np
+from collections import deque
 
 from dqn_basic import DQNAgent
 
@@ -42,14 +43,13 @@ agent = DQNAgent(
 
 
 episodes = 100000
-render_every = 200
+render_every = 2000000000
 how_much_to_render = 1
-rewards = []
+rewards = []  # Keep for final plotting
+recent_rewards = deque(maxlen=100)  # Only keep last 100 for rolling average
 
 
 # ---------------- Main Training Loop ------------------
-avg_rewards = 0
-number_episodes = 0
 
 for episode in range(episodes):
     if episode % render_every < how_much_to_render and episode > 99:
@@ -73,15 +73,12 @@ for episode in range(episodes):
         state = next_state
         total_reward += reward
     
-    avg_rewards += 1/ (number_episodes + 1) * (total_reward - avg_rewards)
-    if number_episodes > 100:
-
-        avg_rewards = 0
-        number_episodes = 0
-    number_episodes += 1
+    rewards.append(total_reward)
+    recent_rewards.append(total_reward)
+    # Calculate true rolling average over last 100 episodes
+    avg_rewards = np.mean(recent_rewards)
 
     print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Epsilon: {agent.epsilon:.3f} | Total Reward: {total_reward:.2f}")
-    rewards.append(total_reward)
 
     # ---- Save policy periodically ----
     save_path_2 = save_path + f"avg{int(avg_rewards)}_ep{episode}.pth"
