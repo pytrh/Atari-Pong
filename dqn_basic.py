@@ -11,6 +11,7 @@ import random
 class ReplayBuffer:
     """Simple uniform experience replay buffer."""
     def __init__(self, capacity=10000):
+        self.capacity = capacity
         self.buffer = deque(maxlen=capacity)
     
     def push(self, state, action, reward, next_state, done):
@@ -37,11 +38,11 @@ class DQN(nn.Module):
     def __init__(self, input_dim, output_dim):
         super(DQN, self).__init__()
         self.net = nn.Sequential(
-            nn.Linear(input_dim, 128),
+            nn.Linear(input_dim, 256),
             nn.ReLU(),
-            nn.Linear(128, 128),
+            nn.Linear(256, 256),
             nn.ReLU(),
-            nn.Linear(128, output_dim)
+            nn.Linear(256, output_dim)
         )
 
     def forward(self, x):

@@ -35,9 +35,9 @@ env = FlattenObservation(env)
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.0005,
+    alpha=0.001,  # Increased from 0.0005 for faster learning
     epsilon=1.0,
-    epsilon_decay=0.995,
+    epsilon_decay=0.9995,  # Slower decay to maintain exploration longer
     min_epsilon=0.01
 )
 
@@ -78,7 +78,12 @@ for episode in range(episodes):
     # Calculate true rolling average over last 100 episodes
     avg_rewards = np.mean(recent_rewards)
 
-    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Epsilon: {agent.epsilon:.3f} | Total Reward: {total_reward:.2f}")
+    # Debug info: show buffer size and update counter periodically
+    debug_info = ""
+    if episode % 100 == 0:
+        debug_info = f" | Buffer: {len(agent.replay_buffer)}/{agent.replay_buffer.capacity} | Updates: {agent.update_counter}"
+
+    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Epsilon: {agent.epsilon:.3f} | Total Reward: {total_reward:.2f}{debug_info}")
 
     # ---- Save policy periodically ----
     save_path_2 = save_path + f"avg{int(avg_rewards)}_ep{episode}.pth"
