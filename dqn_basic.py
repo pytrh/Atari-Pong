@@ -1,4 +1,4 @@
-# DQN basic implementation without experience replay and target network
+# DQN basic implementation with experience replay and target network
 
 import numpy as np
 import torch
@@ -49,7 +49,7 @@ class DQN(nn.Module):
 
 class DQNAgent:
     def __init__(self, env, gamma=0.95, alpha=0.001, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.01, 
-                 replay_buffer_size=10000, batch_size=32):
+                 replay_buffer_size=10000, batch_size=32, target_update_frequency=1000):
         self.env = env
         self.gamma = gamma
         self.epsilon = epsilon
@@ -57,11 +57,19 @@ class DQNAgent:
         self.min_epsilon = min_epsilon
         self.actions = range(env.action_space.n)
         self.batch_size = batch_size
+        self.target_update_frequency = target_update_frequency
+        self.update_counter = 0
 
         self.state_dim = env.observation_space.shape[0]
         self.action_dim = env.action_space.n
         
         self.q_network = DQN(self.state_dim, self.action_dim)
+        self.target_network = DQN(self.state_dim, self.action_dim)
+        # Initialize target network with the same weights as the main network
+        self.target_network.load_state_dict(self.q_network.state_dict())
+        # Set target network to evaluation mode (no gradient computation needed)
+        self.target_network.eval()
+        
         self.optimizer = optim.RMSprop(self.q_network.parameters(), lr=alpha)
         self.loss_fn = nn.MSELoss()
         self.replay_buffer = ReplayBuffer(capacity=replay_buffer_size)
@@ -106,9 +114,9 @@ class DQNAgent:
         q_values = self.q_network(states_tensor)
         q_value = q_values.gather(1, actions_tensor.unsqueeze(1)).squeeze(1)
         
-        # Compute target Q-values
+        # Compute target Q-values using the target network
         with torch.no_grad():
-            next_q_values = self.q_network(next_states_tensor)
+            next_q_values = self.target_network(next_states_tensor)
             max_next_q = torch.max(next_q_values, dim=1)[0]
             target_q = rewards_tensor + (~dones_tensor).float() * self.gamma * max_next_q
         
@@ -117,6 +125,11 @@ class DQNAgent:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        
+        # Update target network periodically
+        self.update_counter += 1
+        if self.update_counter % self.target_update_frequency == 0:
+            self.target_network.load_state_dict(self.q_network.state_dict())
         
         # Decay epsilon if episode is done (only if transition was provided)
         if done and state is not None:
