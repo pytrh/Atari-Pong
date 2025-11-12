@@ -8,28 +8,32 @@ from dqn_basic import DQNAgent
 import matplotlib.pyplot as plt
 import torch
 
+# choose device: cuda if available, otherwise cpu
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
+
 
 # --------- Saving Policy ---------
 save_policy = True       # Enable/Disable saving
 save_every = 300        # Save every X episodes
 PARAM = "test_numero_42_"  # Description of the parameters
-# save_path = "policies/pong_" + PARAM
-save_path = "policies/lunar_lander_" + PARAM
+save_path = "policies/pong_" + PARAM
+# save_path = "policies/lunar_lander_" + PARAM
 add_info = {}
 
 
 # ------------------ Environment and Agent Setup ------------------
 
-env_name = 'LunarLander-v3'
-env = gym.make(env_name)
+# env_name = 'LunarLander-v3'
+# env = gym.make(env_name)
 
-# gym.register_envs(ale_py)
-# env_name = 'ALE/Pong-v5'
-# add_info = {'obs_type': "ram"}
-# 
-# env = gym.make(env_name, render_mode="human", **add_info)
-# env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-# env = FlattenObservation(env)
+gym.register_envs(ale_py)
+env_name = 'ALE/Pong-v5'
+add_info = {'obs_type': "ram"}
+
+env = gym.make(env_name, render_mode="human", **add_info)
+env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+env = FlattenObservation(env)
 
 agent = DQNAgent(
     env,
@@ -39,7 +43,6 @@ agent = DQNAgent(
     epsilon_decay=0.999,
     min_epsilon=0.01
 )
-
 
 episodes = 100000
 render_every = 200
@@ -57,8 +60,8 @@ for episode in range(episodes):
     else:
         env = gym.make(env_name, **add_info)
 
-#    env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-#    env = FlattenObservation(env)
+    env = FrameStackObservation(env, stack_size=4, padding_type="zero")
+    env = FlattenObservation(env)
     
     state, _ = env.reset()
     done = False
@@ -87,16 +90,14 @@ for episode in range(episodes):
     save_path_2 = save_path + f"avg{int(avg_rewards)}_ep{episode}.pth"
     if save_policy and episode % save_every == 0 and episode > 0:
         if hasattr(agent, "q_network"):
+            # saved state dict works on CPU/GPU; when loading elsewhere use map_location
             torch.save(agent.q_network.state_dict(), save_path_2)
-            #print(f"✅ Policy (q_network) saved at episode {episode} -> {save_path_2}")
-            print(f"Policy (q_network) saved at episode {episode} -> {save_path_2}")
+            print(f"✅ Policy (q_network) saved at episode {episode} -> {save_path_2}")
         elif hasattr(agent, "model"):
             torch.save(agent.model.state_dict(), save_path_2)
-            #print(f"✅ Policy (model) saved at episode {episode} -> {save_path_2}")
-            print(f"Policy (model) saved at episode {episode} -> {save_path_2}")
+            print(f"✅ Policy (model) saved at episode {episode} -> {save_path_2}")
         else:
-            #print("⚠️ No neural network found in agent, skipping save...")
-            print("No neural network found in agent, skipping save...")
+            print("⚠️ No neural network found in agent, skipping save...")
 
     env.close()
 
