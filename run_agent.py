@@ -37,7 +37,7 @@ agent = DQNAgent(
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.999,
+    epsilon_decay=0.995,
     min_epsilon=0.01
 )
 
