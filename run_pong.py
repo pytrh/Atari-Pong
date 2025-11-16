@@ -44,8 +44,7 @@ agent = DQNAgent(
     epsilon_decay=0.999999,
     min_epsilon=0.01,
     per_alpha=0.6,
-    per_alpha_increment=0.0,
-    per_beta_increment=0.0,
+    per_beta=0.4,
     total_training_steps=episodes * 5000  # Approx 5k-10k steps per Pong episode
 )
 
