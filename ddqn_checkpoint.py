@@ -26,7 +26,7 @@ class DQN(nn.Module):
         return self.net(x)
 
 class DQNAgent:
-    def __init__(self, env, gamma=0.95, alpha=0.001, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.05,
+    def __init__(self, env, gamma=0.95, alpha=0.00025, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.05,
                  buffer_capacity=100000, batch_size=32, min_buffer_size=1000,
                  target_update_frequency=1000,
                  per_alpha=0.6, per_alpha_increment=0.0, per_beta=0.4, per_beta_increment=None, 
