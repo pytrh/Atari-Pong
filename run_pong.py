@@ -6,7 +6,8 @@ import numpy as np
 
 # from dqn_basic import DQNAgent
 # from ddqn_basic import DQNAgent
-from ddqn_uniform import DQNAgent
+# from ddqn_uniform import DQNAgent
+from ddqn_per import DQNAgent
 
 import matplotlib.pyplot as plt
 import torch
@@ -30,23 +31,25 @@ env = gym.make(env_name, render_mode="human", **add_info)
 env = FrameStackObservation(env, stack_size=4, padding_type="zero")
 env = FlattenObservation(env)
 
+episodes = 100000
+render_every = 1000
+how_much_to_render = 0
+rewards = []
+
 agent = DQNAgent(
     env,
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
     epsilon_decay=0.999999,
-    min_epsilon=0.01
+    min_epsilon=0.01,
+    per_alpha=0.6,
+    per_alpha_increment=0.0,
+    per_beta_increment=0.0,
+    total_training_steps=episodes * 5000  # Approx 5k-10k steps per Pong episode
 )
 
 print(f"Using device: {agent.device}")
-
-
-episodes = 100000
-render_every = 1000
-how_much_to_render = 0
-rewards = []
-
 
 # ---------------- Main Training Loop ------------------
 avg_rewards = 0

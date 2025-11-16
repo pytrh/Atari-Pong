@@ -4,7 +4,8 @@ import numpy as np
 
 # from dqn_basic import DQNAgent
 # from ddqn_basic import DQNAgent
-from ddqn_uniform import DQNAgent
+# from ddqn_uniform import DQNAgent
+from ddqn_per import DQNAgent
 
 import matplotlib.pyplot as plt
 import torch
@@ -23,6 +24,10 @@ add_info = {}
 env_name = "LunarLander-v3"
 env = gym.make(env_name)
 
+episodes = 6000
+render_every = 1000
+how_much_to_render = 1
+rewards = []
 
 agent = DQNAgent(
     env,
@@ -30,17 +35,13 @@ agent = DQNAgent(
     alpha=0.0005,
     epsilon=1.0,
     epsilon_decay=0.9999,
-    min_epsilon=0.01
+    min_epsilon=0.01,
+    per_alpha=0.6,
+    per_beta=0.4,
+    total_training_steps=episodes * 200,  # Approx 200 steps per episode for LunarLander
 )
 
 print(f"Using device: {agent.device}")
-
-
-episodes = 6000
-render_every = 1000
-how_much_to_render = 1
-rewards = []
-
 
 # ---------------- Main Training Loop ------------------
 avg_rewards = 0
