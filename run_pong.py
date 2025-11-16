@@ -40,8 +40,8 @@ print(f"Using device: {agent.device}")
 
 
 episodes = 100000
-render_every = 200
-how_much_to_render = 1
+render_every = 1000
+how_much_to_render = 0
 rewards = []
 
 
