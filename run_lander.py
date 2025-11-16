@@ -28,7 +28,7 @@ env = gym.make(env_name)
 
 episodes = 100000
 render_every = 1000
-how_much_to_render = 1
+how_much_to_render = 0
 rewards = []
 
 agent = DQNAgent(
