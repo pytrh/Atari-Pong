@@ -25,8 +25,8 @@ class DQN(nn.Module):
         return self.net(x)
 
 class DQNAgent:
-    def __init__(self, env, gamma=0.95, alpha=0.001, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.01,
-                 buffer_capacity=10000, batch_size=32, min_buffer_size=1000,
+    def __init__(self, env, gamma=0.95, alpha=0.001, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.05,
+                 buffer_capacity=100000, batch_size=32, min_buffer_size=1000,
                  target_update_frequency=1000,
                  per_alpha=0.6, per_alpha_increment=0.0, per_beta=0.4, per_beta_increment=None, 
                  per_epsilon=1e-6, total_training_steps=200000):
@@ -174,6 +174,8 @@ class DQNAgent:
 
             self.optimizer_1.zero_grad()
             loss.backward()
+            # After loss.backward(), before optimizer.step()
+            torch.nn.utils.clip_grad_norm_(self.q_network_1.parameters(), max_norm=10.0)
             self.optimizer_1.step()
         else:
             # Update Q2: use target_network_1 to select action, target_network_2 to evaluate
@@ -196,6 +198,8 @@ class DQNAgent:
 
             self.optimizer_2.zero_grad()
             loss.backward()
+            # After loss.backward(), before optimizer.step()
+            torch.nn.utils.clip_grad_norm_(self.q_network_2.parameters(), max_norm=10.0)
             self.optimizer_2.step()
         
         # Update priorities in the replay buffer based on TD errors
