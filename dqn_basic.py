@@ -1,4 +1,5 @@
 # DQN basic implementation without experience replay and target network
+# Using device selection: CUDA > MPS > CPU
 
 import numpy as np
 import torch
@@ -32,12 +33,20 @@ class DQNAgent:
         self.state_dim = env.observation_space.shape[0]
         self.action_dim = env.action_space.n
         
-        self.q_network = DQN(self.state_dim, self.action_dim)
+        # Device selection: CUDA > MPS > CPU
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        elif torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        else:
+            self.device = torch.device("cpu")
+        
+        self.q_network = DQN(self.state_dim, self.action_dim).to(self.device)
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=alpha)
         self.loss_fn = nn.MSELoss()
 
     def play(self, state):
-        state_tensor = torch.FloatTensor(state).unsqueeze(0)  # [1, state_dim]
+        state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)  # [1, state_dim]
         if np.random.rand() < self.epsilon:
             return np.random.choice(self.actions)
         else:
@@ -46,14 +55,14 @@ class DQNAgent:
             return int(torch.argmax(q_values).item())
 
     def update(self, state, action, reward, next_state, done):
-        state_tensor = torch.FloatTensor(state).unsqueeze(0)
-        next_state_tensor = torch.FloatTensor(next_state).unsqueeze(0)
+        state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)
+        next_state_tensor = torch.FloatTensor(next_state).unsqueeze(0).to(self.device)
 
         with torch.no_grad(): # no grad since it is the target, a fixed value
             max_next_q = torch.max(self.q_network(next_state_tensor))
             target_q = reward + (0 if done else self.gamma * max_next_q.item())
 
-        target_q = torch.tensor([target_q], dtype=torch.float32)
+        target_q = torch.tensor([target_q], dtype=torch.float32).to(self.device)
 
         q_values = self.q_network(state_tensor)
         q_value = q_values[0, action].unsqueeze(0)

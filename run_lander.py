@@ -30,6 +30,8 @@ agent = DQNAgent(
     min_epsilon=0.01
 )
 
+print(f"Using device: {agent.device}")
+
 
 episodes = 1000
 render_every = 200
