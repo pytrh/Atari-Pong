@@ -216,7 +216,7 @@ class DQNAgent:
         # Periodically update target networks
         if self.training_steps % self.target_update_frequency == 0:
             self.update_target_network()
-            print(f"  [Target networks updated at step {self.training_steps}]")
+            print(f"[Target networks updated at step {self.training_steps}]")
 
         # Decay epsilon at end of episode
         if done:
@@ -259,7 +259,7 @@ class DQNAgent:
             }
             
             torch.save(checkpoint, save_path)
-            print(f"  [New best model saved! Reward: {episode_reward:.2f} at episode {self.episodes_trained}]")
+            print(f"[New best model saved! Reward: {episode_reward:.2f} at episode {self.episodes_trained}]")
             return True
         
         return False
@@ -301,7 +301,7 @@ class DQNAgent:
         self.replay_buffer.beta = checkpoint['replay_buffer_beta']
         
         print(f"Model loaded from {load_path}")
-        print(f"  Episode: {self.episodes_trained}, Best Reward: {self.best_reward:.2f}")
-        print(f"  Training Steps: {self.training_steps}, Epsilon: {self.epsilon:.4f}")
+        print(f"Episode: {self.episodes_trained}, Best Reward: {self.best_reward:.2f}")
+        print(f"Training Steps: {self.training_steps}, Epsilon: {self.epsilon:.4f}")
         
         return checkpoint

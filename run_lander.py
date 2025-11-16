@@ -79,6 +79,9 @@ for episode in range(episodes):
         number_episodes = 0
     number_episodes += 1
 
+    # Save best model automatically
+    agent.save_best_model(total_reward, save_path='policies/lunar_best_model.pth')
+
     print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Best: {agent.best_reward:.2f} \
         | Epsilon: {agent.epsilon:.3f} \
         | Alpha: {agent.alpha:.3f} \
@@ -99,6 +102,9 @@ for episode in range(episodes):
         elif hasattr(agent, "q_network_2"):
             torch.save(agent.q_network_2.state_dict(), save_path_2)
             print(f"Policy (q_network_2) saved at episode {episode} -> {save_path_2}")
+        elif hasattr(agent, "model"):
+            torch.save(agent.model.state_dict(), save_path_2)
+            print(f"Policy (model) saved at episode {episode} -> {save_path_2}")
         else:
             print("No neural network found in agent, skipping save...")
 
