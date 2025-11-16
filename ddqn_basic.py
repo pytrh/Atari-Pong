@@ -33,11 +33,11 @@ class DQNAgent:
         self.state_dim = env.observation_space.shape[0]
         self.action_dim = env.action_space.n
         
-        # Device selection: CUDA > MPS > CPU
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
         # elif torch.backends.mps.is_available():
         #     self.device = torch.device("mps")
+        # TODO: Why mps appears to be so much slower than cpu?
         else:
             self.device = torch.device("cpu")
         
