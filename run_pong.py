@@ -32,9 +32,9 @@ env = gym.make(env_name, render_mode="human", **add_info)
 env = FrameStackObservation(env, stack_size=4, padding_type="zero")
 env = FlattenObservation(env)
 
-episodes = 100000
+episodes = 1000000
 render_every = 1000
-how_much_to_render = 0
+how_much_to_render = 1
 rewards = []
 
 agent = DQNAgent(
@@ -110,7 +110,7 @@ avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewar
 plt.plot(avg_rewards)
 plt.xlabel("Episode")
 plt.ylabel("Average Reward (100 ep)")
-plt.title("Pong with Double Q-Learning, Prioritized Experience Replay and Target Networks")
+plt.title("Pong with Double Q-Learning, PER and Target Networks")
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 plt.savefig(f"plots/pong_{timestamp}.png")
 plt.show()

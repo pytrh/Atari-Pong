@@ -25,7 +25,7 @@ add_info = {}
 env_name = "LunarLander-v3"
 env = gym.make(env_name)
 
-episodes = 6000
+episodes = 100000
 render_every = 1000
 how_much_to_render = 1
 rewards = []
@@ -100,7 +100,7 @@ avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewar
 plt.plot(avg_rewards)
 plt.xlabel("Episode")
 plt.ylabel("Average Reward (100 ep)")
-plt.title("Lunar Lander with Double Q-Learning, Prioritized Experience Replay and Target Networks")
+plt.title("Lunar Lander with Double Q-Learning, PER and Target Networks")
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 plt.savefig(f"plots/lunar_{timestamp}.png")
 plt.show()
