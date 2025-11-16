@@ -1,6 +1,5 @@
 # Double Q-Learning basic implementation without experience replay
 # Uses two Q-networks that alternate roles: one selects actions, the other evaluates them
-# Using device selection: CUDA > MPS > CPU
 
 import numpy as np
 import torch
@@ -37,8 +36,8 @@ class DQNAgent:
         # Device selection: CUDA > MPS > CPU
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
-        elif torch.backends.mps.is_available():
-            self.device = torch.device("mps")
+        # elif torch.backends.mps.is_available():
+        #     self.device = torch.device("mps")
         else:
             self.device = torch.device("cpu")
         

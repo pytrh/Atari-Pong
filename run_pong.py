@@ -3,7 +3,8 @@ import ale_py
 from gymnasium.wrappers import FrameStackObservation, FlattenObservation
 import numpy as np
 
-from dqn_basic import DQNAgent
+# from dqn_basic import DQNAgent
+from ddqn_basic import DQNAgent
 
 import matplotlib.pyplot as plt
 import torch
