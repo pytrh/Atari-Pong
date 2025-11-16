@@ -102,8 +102,8 @@ class DQNAgent:
         self.update_target_network()
         
         # Separate optimizers for each network using RMSProp
-        self.optimizer_1 = optim.RMSprop(self.q_network_1.parameters(), lr=self.alpha)
-        self.optimizer_2 = optim.RMSprop(self.q_network_2.parameters(), lr=self.alpha)
+        self.optimizer_1 = optim.RMSprop(self.q_network_1.parameters(), lr=alpha)
+        self.optimizer_2 = optim.RMSprop(self.q_network_2.parameters(), lr=alpha)
         self.loss_fn = nn.MSELoss()
         
         # Best model tracking
