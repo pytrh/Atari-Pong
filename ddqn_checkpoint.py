@@ -52,6 +52,7 @@ class DQNAgent:
             per_epsilon: Small constant to prevent zero priorities
             total_training_steps: Expected total training steps (used to calculate beta_increment if not provided)
         """
+        self.alpha = alpha
         self.env = env
         self.gamma = gamma
         self.epsilon = epsilon
@@ -102,8 +103,8 @@ class DQNAgent:
         self.update_target_network()
         
         # Separate optimizers for each network using RMSProp
-        self.optimizer_1 = optim.RMSprop(self.q_network_1.parameters(), lr=alpha)
-        self.optimizer_2 = optim.RMSprop(self.q_network_2.parameters(), lr=alpha)
+        self.optimizer_1 = optim.RMSprop(self.q_network_1.parameters(), lr=self.alpha)
+        self.optimizer_2 = optim.RMSprop(self.q_network_2.parameters(), lr=self.alpha)
         self.loss_fn = nn.MSELoss()
         
         # Best model tracking
