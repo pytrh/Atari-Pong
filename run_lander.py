@@ -79,10 +79,11 @@ for episode in range(episodes):
         number_episodes = 0
     number_episodes += 1
 
-    # Save best model automatically
-    agent.save_best_model(total_reward, save_path='policies/lunar_best_model.pth')
+    # Save best models automatically (both episode and average)
+    agent.save_best_model(total_reward, save_path='policies/lunar_best_episode.pth')
+    agent.save_best_average_model(avg_rewards, save_path='policies/lunar_best_avg.pth')
 
-    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Best: {agent.best_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Total Reward: {total_reward:.2f}")
+    print(f"Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
     rewards.append(total_reward)
 
     # ---- Save policy periodically ----

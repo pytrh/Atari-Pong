@@ -107,7 +107,8 @@ class DQNAgent:
         self.loss_fn = nn.MSELoss()
         
         # Best model tracking
-        self.best_reward = float('-inf')
+        self.best_reward = float('-inf')          # Best single episode
+        self.best_avg_reward = float('-inf')      # Best average performance
         self.episodes_trained = 0
 
     def update_target_network(self):
@@ -246,6 +247,7 @@ class DQNAgent:
             checkpoint = {
                 'episode': self.episodes_trained,
                 'best_reward': self.best_reward,
+                'best_avg_reward': self.best_avg_reward,
                 'q_network_1_state_dict': self.q_network_1.state_dict(),
                 'q_network_2_state_dict': self.q_network_2.state_dict(),
                 'target_network_1_state_dict': self.target_network_1.state_dict(),
@@ -259,7 +261,47 @@ class DQNAgent:
             }
             
             torch.save(checkpoint, save_path)
-            print(f"[New best model saved! Reward: {episode_reward:.2f} at episode {self.episodes_trained}]")
+            print(f"[New best episode saved! Reward: {episode_reward:.2f} at episode {self.episodes_trained}]")
+            return True
+        
+        return False
+    
+    def save_best_average_model(self, avg_reward, save_path='best_avg_model.pth'):
+        """
+        Save the model if current average reward is better than best average reward.
+        
+        Args:
+            avg_reward: Average reward over recent episodes
+            save_path: Path where to save the model
+        
+        Returns:
+            bool: True if model was saved, False otherwise
+        """
+        if avg_reward > self.best_avg_reward:
+            self.best_avg_reward = avg_reward
+            
+            # Create directory if it doesn't exist
+            os.makedirs(os.path.dirname(save_path) if os.path.dirname(save_path) else '.', exist_ok=True)
+            
+            # Save all model components
+            checkpoint = {
+                'episode': self.episodes_trained,
+                'best_reward': self.best_reward,
+                'best_avg_reward': self.best_avg_reward,
+                'q_network_1_state_dict': self.q_network_1.state_dict(),
+                'q_network_2_state_dict': self.q_network_2.state_dict(),
+                'target_network_1_state_dict': self.target_network_1.state_dict(),
+                'target_network_2_state_dict': self.target_network_2.state_dict(),
+                'optimizer_1_state_dict': self.optimizer_1.state_dict(),
+                'optimizer_2_state_dict': self.optimizer_2.state_dict(),
+                'epsilon': self.epsilon,
+                'training_steps': self.training_steps,
+                'replay_buffer_alpha': self.replay_buffer.alpha,
+                'replay_buffer_beta': self.replay_buffer.beta,
+            }
+            
+            torch.save(checkpoint, save_path)
+            print(f"[New best average saved! Avg Reward: {avg_reward:.2f} at episode {self.episodes_trained}]")
             return True
         
         return False
@@ -294,6 +336,7 @@ class DQNAgent:
         self.epsilon = checkpoint['epsilon']
         self.training_steps = checkpoint['training_steps']
         self.best_reward = checkpoint['best_reward']
+        self.best_avg_reward = checkpoint.get('best_avg_reward', float('-inf'))  # Backward compatibility
         self.episodes_trained = checkpoint['episode']
         
         # Load replay buffer parameters
@@ -301,7 +344,7 @@ class DQNAgent:
         self.replay_buffer.beta = checkpoint['replay_buffer_beta']
         
         print(f"Model loaded from {load_path}")
-        print(f"Episode: {self.episodes_trained}, Best Reward: {self.best_reward:.2f}")
+        print(f"Episode: {self.episodes_trained}, Best Episode Reward: {self.best_reward:.2f}, Best Avg Reward: {self.best_avg_reward:.2f}")
         print(f"Training Steps: {self.training_steps}, Epsilon: {self.epsilon:.4f}")
         
         return checkpoint
