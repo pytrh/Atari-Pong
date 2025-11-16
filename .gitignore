@@ -1,3 +1,4 @@
 .venv
-policies
+policies/*
+!policies/.gitkeep
 __pycache__
