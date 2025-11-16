@@ -30,7 +30,7 @@ class DQNAgent:
                  buffer_capacity=100000, batch_size=32, min_buffer_size=1000,
                  target_update_frequency=1000,
                  per_alpha=0.6, per_alpha_increment=0.0, per_beta=0.4, per_beta_increment=None, 
-                 per_epsilon=1e-6, total_training_steps=200000):
+                 per_epsilon=1e-6, total_training_steps=200000, device="cpu"):
         """
         Initialize DQN Agent with Target Network and Prioritized Experience Replay.
         
@@ -52,6 +52,7 @@ class DQNAgent:
             per_epsilon: Small constant to prevent zero priorities
             total_training_steps: Expected total training steps (used to calculate beta_increment if not provided)
         """
+        self.device = device
         self.env = env
         self.gamma = gamma
         self.epsilon = epsilon
@@ -83,13 +84,13 @@ class DQNAgent:
         self.target_update_frequency = target_update_frequency
         self.training_steps = 0  # Counter for training steps
         
-        if torch.cuda.is_available():
-            self.device = torch.device("cuda")
+        # if torch.cuda.is_available():
+        #     self.device = torch.device("cuda")
         # elif torch.backends.mps.is_available():
         #     self.device = torch.device("mps")
         # TODO: Why mps appears to be so much slower than cpu?
-        else:
-            self.device = torch.device("cpu")
+        # else:
+        #     self.device = torch.device("cpu")
         
         # Double Q-Learning: Two main Q-networks
         self.q_network_1 = DQN(self.state_dim, self.action_dim).to(self.device)
