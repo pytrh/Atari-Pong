@@ -4,33 +4,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from collections import deque
-import random
-
-
-class ReplayBuffer:
-    """Simple uniform experience replay buffer."""
-    def __init__(self, capacity=10000):
-        self.buffer = deque(maxlen=capacity)
-    
-    def push(self, state, action, reward, next_state, done):
-        """Add a transition to the buffer."""
-        self.buffer.append((state, action, reward, next_state, done))
-    
-    def sample(self, batch_size):
-        """Sample a batch of transitions uniformly at random."""
-        batch = random.sample(self.buffer, batch_size)
-        states, actions, rewards, next_states, dones = zip(*batch)
-        return (
-            np.array(states),
-            np.array(actions),
-            np.array(rewards),
-            np.array(next_states),
-            np.array(dones)
-        )
-    
-    def __len__(self):
-        return len(self.buffer)
 
 
 class DQN(nn.Module):
@@ -48,23 +21,20 @@ class DQN(nn.Module):
         return self.net(x)
 
 class DQNAgent:
-    def __init__(self, env, gamma=0.95, alpha=0.001, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.01, 
-                 replay_buffer_size=10000, batch_size=32):
+    def __init__(self, env, gamma=0.95, alpha=0.001, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.01):
         self.env = env
         self.gamma = gamma
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         self.min_epsilon = min_epsilon
         self.actions = range(env.action_space.n)
-        self.batch_size = batch_size
 
         self.state_dim = env.observation_space.shape[0]
         self.action_dim = env.action_space.n
         
         self.q_network = DQN(self.state_dim, self.action_dim)
-        self.optimizer = optim.RMSprop(self.q_network.parameters(), lr=alpha)
+        self.optimizer = optim.Adam(self.q_network.parameters(), lr=alpha)
         self.loss_fn = nn.MSELoss()
-        self.replay_buffer = ReplayBuffer(capacity=replay_buffer_size)
 
     def play(self, state):
         state_tensor = torch.FloatTensor(state).unsqueeze(0)  # [1, state_dim]
@@ -75,50 +45,24 @@ class DQNAgent:
                 q_values = self.q_network(state_tensor)
             return int(torch.argmax(q_values).item())
 
-    def store_transition(self, state, action, reward, next_state, done):
-        """Store a transition in the replay buffer."""
-        self.replay_buffer.push(state, action, reward, next_state, done)
-    
-    def update(self, state=None, action=None, reward=None, next_state=None, done=None):
-        """
-        Update the Q-network using a batch from the replay buffer.
-        If individual transition is provided, store it and update if buffer has enough samples.
-        """
-        # Store transition if provided
-        if state is not None:
-            self.store_transition(state, action, reward, next_state, done)
-        
-        # Only update if we have enough samples in the buffer
-        if len(self.replay_buffer) < self.batch_size:
-            return
-        
-        # Sample a batch from the replay buffer
-        states, actions, rewards, next_states, dones = self.replay_buffer.sample(self.batch_size)
-        
-        # Convert to tensors
-        states_tensor = torch.FloatTensor(states)
-        next_states_tensor = torch.FloatTensor(next_states)
-        rewards_tensor = torch.FloatTensor(rewards)
-        dones_tensor = torch.BoolTensor(dones)
-        actions_tensor = torch.LongTensor(actions)
-        
-        # Compute Q-values for current states
-        q_values = self.q_network(states_tensor)
-        q_value = q_values.gather(1, actions_tensor.unsqueeze(1)).squeeze(1)
-        
-        # Compute target Q-values
-        with torch.no_grad():
-            next_q_values = self.q_network(next_states_tensor)
-            max_next_q = torch.max(next_q_values, dim=1)[0]
-            target_q = rewards_tensor + (~dones_tensor).float() * self.gamma * max_next_q
-        
-        # Compute loss and update
+    def update(self, state, action, reward, next_state, done):
+        state_tensor = torch.FloatTensor(state).unsqueeze(0)
+        next_state_tensor = torch.FloatTensor(next_state).unsqueeze(0)
+
+        with torch.no_grad(): # no grad since it is the target, a fixed value
+            max_next_q = torch.max(self.q_network(next_state_tensor))
+            target_q = reward + (0 if done else self.gamma * max_next_q.item())
+
+        target_q = torch.tensor([target_q], dtype=torch.float32)
+
+        q_values = self.q_network(state_tensor)
+        q_value = q_values[0, action].unsqueeze(0)
+
         loss = self.loss_fn(q_value, target_q)
-        self.optimizer.zero_grad()
-        loss.backward()
+        self.optimizer.zero_grad() # clears old gradients from the last step
+        loss.backward() # computes the gradients of the loss w.r.t. each parameter and adds them to the .grad attribute of each parameter.
         self.optimizer.step()
-        
-        # Decay epsilon if episode is done (only if transition was provided)
-        if done and state is not None:
+
+        if done:
             self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
 

@@ -1,6 +1,4 @@
 import gymnasium as gym
-import ale_py
-from gymnasium.wrappers import FrameStackObservation, FlattenObservation
 import numpy as np
 
 from dqn_basic import DQNAgent
@@ -13,37 +11,29 @@ import torch
 save_policy = True       # Enable/Disable saving
 save_every = 300        # Save every X episodes
 PARAM = "test_numero_42_"  # Description of the parameters
-save_path = "policies/pong_" + PARAM
-# save_path = "policies/lunar_lander_" + PARAM
+save_path = "policies/lunar_" + PARAM
 add_info = {}
 
 
 # ------------------ Environment and Agent Setup ------------------
 
-# env_name = 'LunarLander-v3'
-# env = gym.make(env_name)
+env_name = "LunarLander-v3"
+env = gym.make(env_name)
 
-gym.register_envs(ale_py)
-env_name = 'ALE/Pong-v5'
-add_info = {'obs_type': "ram"}
-
-env = gym.make(env_name, render_mode="human", **add_info)
-env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-env = FlattenObservation(env)
 
 agent = DQNAgent(
     env,
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.999,
+    epsilon_decay=0.995,
     min_epsilon=0.01
 )
 
 
-episodes = 100000
+episodes = 1000
 render_every = 200
-how_much_to_render = 1
+how_much_to_render = 3
 rewards = []
 
 
@@ -57,9 +47,6 @@ for episode in range(episodes):
     else:
         env = gym.make(env_name, **add_info)
 
-    env = FrameStackObservation(env, stack_size=4, padding_type="zero")
-    env = FlattenObservation(env)
-    
     state, _ = env.reset()
     done = False
     total_reward = 0
@@ -88,12 +75,12 @@ for episode in range(episodes):
     if save_policy and episode % save_every == 0 and episode > 0:
         if hasattr(agent, "q_network"):
             torch.save(agent.q_network.state_dict(), save_path_2)
-            print(f"✅ Policy (q_network) saved at episode {episode} -> {save_path_2}")
+            print(f"Policy (q_network) saved at episode {episode} -> {save_path_2}")
         elif hasattr(agent, "model"):
             torch.save(agent.model.state_dict(), save_path_2)
-            print(f"✅ Policy (model) saved at episode {episode} -> {save_path_2}")
+            print(f"Policy (model) saved at episode {episode} -> {save_path_2}")
         else:
-            print("⚠️ No neural network found in agent, skipping save...")
+            print("No neural network found in agent, skipping save...")
 
     env.close()
 
@@ -102,5 +89,4 @@ avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewar
 plt.plot(avg_rewards)
 plt.xlabel("Episode")
 plt.ylabel("Average Reward (100 ep)")
-plt.title("DQN")
 plt.show()
