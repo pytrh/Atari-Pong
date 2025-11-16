@@ -1,3 +1,4 @@
+import datetime
 import gymnasium as gym
 import numpy as np
 
@@ -96,4 +97,7 @@ avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewar
 plt.plot(avg_rewards)
 plt.xlabel("Episode")
 plt.ylabel("Average Reward (100 ep)")
+plt.title("Lunar Lander with Double Q-Learning and Uniform Experience Replay")
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+plt.savefig(f"plots/lunar_lander_ddqn_uniform_avg_rewards_{timestamp}.png")
 plt.show()
