@@ -94,9 +94,12 @@ for episode in range(episodes):
         if hasattr(agent, "q_network"):
             torch.save(agent.q_network.state_dict(), save_path_2)
             print(f"Policy (q_network) saved at episode {episode} -> {save_path_2}")
-        elif hasattr(agent, "model"):
-            torch.save(agent.model.state_dict(), save_path_2)
-            print(f"Policy (model) saved at episode {episode} -> {save_path_2}")
+        elif hasattr(agent, "q_network_1"):
+            torch.save(agent.q_network_1.state_dict(), save_path_2)
+            print(f"Policy (q_network_1) saved at episode {episode} -> {save_path_2}")
+        elif hasattr(agent, "q_network_2"):
+            torch.save(agent.q_network_2.state_dict(), save_path_2)
+            print(f"Policy (q_network_2) saved at episode {episode} -> {save_path_2}")
         else:
             print("No neural network found in agent, skipping save...")
 
@@ -107,7 +110,7 @@ avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewar
 plt.plot(avg_rewards)
 plt.xlabel("Episode")
 plt.ylabel("Average Reward (100 ep)")
-plt.title("Pong with Double Q-Learning and Uniform Experience Replay")
+plt.title("Pong with Double Q-Learning, Prioritized Experience Replay and Target Networks")
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-plt.savefig(f"plots/pong_ddqn_uniform_avg_rewards_{timestamp}.png")
+plt.savefig(f"plots/pong_{timestamp}.png")
 plt.show()
