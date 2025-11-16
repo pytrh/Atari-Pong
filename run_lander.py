@@ -5,7 +5,8 @@ import numpy as np
 # from dqn_basic import DQNAgent
 # from ddqn_basic import DQNAgent
 # from ddqn_uniform import DQNAgent
-from ddqn_per import DQNAgent
+# from ddqn_per import DQNAgent
+from ddqn_target import DQNAgent
 
 import matplotlib.pyplot as plt
 import torch
@@ -38,6 +39,7 @@ agent = DQNAgent(
     min_epsilon=0.01,
     per_alpha=0.6,
     per_beta=0.4,
+    target_update_frequency=1000,
     total_training_steps=episodes * 200,  # Approx 200 steps per episode for LunarLander
 )
 
