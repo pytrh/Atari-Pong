@@ -85,7 +85,11 @@ for episode in range(episodes):
         number_episodes = 0
     number_episodes += 1
 
-    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Epsilon: {agent.epsilon:.3f} | Total Reward: {total_reward:.2f}")
+    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Epsilon: {agent.epsilon:.3f} \
+        | Alpha: {agent.alpha:.3f} \
+        | PER Alpha: {agent.per_alpha:.3f} \
+        | PER Beta: {agent.per_beta:.3f} \
+        | Total Reward: {total_reward:.2f}")
     rewards.append(total_reward)
 
     # ---- Save policy periodically ----
