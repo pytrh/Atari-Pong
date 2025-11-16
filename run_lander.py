@@ -33,7 +33,7 @@ agent = DQNAgent(
 print(f"Using device: {agent.device}")
 
 
-episodes = 1000
+episodes = 600
 render_every = 200
 how_much_to_render = 3
 rewards = []
