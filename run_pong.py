@@ -8,7 +8,8 @@ import numpy as np
 # from ddqn_basic import DQNAgent
 # from ddqn_uniform import DQNAgent
 # from ddqn_per import DQNAgent
-from ddqn_target import DQNAgent
+# from ddqn_target import DQNAgent
+from ddqn_checkpoint import DQNAgent
 
 import matplotlib.pyplot as plt
 import torch
@@ -52,6 +53,9 @@ agent = DQNAgent(
 
 print(f"Using device: {agent.device}")
 
+# Optional: Load previous best model if it exists
+# agent.load_best_model('policies/pong_best_model.pth')
+
 # ---------------- Main Training Loop ------------------
 avg_rewards = 0
 number_episodes = 0
@@ -85,7 +89,8 @@ for episode in range(episodes):
         number_episodes = 0
     number_episodes += 1
 
-    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Epsilon: {agent.epsilon:.3f} \
+    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Best: {agent.best_reward:.2f} \
+        | Epsilon: {agent.epsilon:.3f} \
         | Alpha: {agent.alpha:.3f} \
         | PER Alpha: {agent.per_alpha:.3f} \
         | PER Beta: {agent.per_beta:.3f} \
