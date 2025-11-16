@@ -32,9 +32,9 @@ env = gym.make(env_name, render_mode="human", **add_info)
 env = FrameStackObservation(env, stack_size=4, padding_type="zero")
 env = FlattenObservation(env)
 
-episodes = 1000000
+episodes = 1000000000
 render_every = 1000
-how_much_to_render = 1
+how_much_to_render = 0
 rewards = []
 
 agent = DQNAgent(
