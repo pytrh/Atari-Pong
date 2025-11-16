@@ -92,9 +92,7 @@ for episode in range(episodes):
     # Save best model automatically
     agent.save_best_model(total_reward, save_path='policies/pong_best_model.pth')
 
-    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Best: {agent.best_reward:.2f} \
-        | Epsilon: {agent.epsilon:.3f} \
-        | Total Reward: {total_reward:.2f}")
+    print(f"Episode {episode} | Avg Reward: {avg_rewards:.2f} | Best: {agent.best_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Total Reward: {total_reward:.2f}")
     rewards.append(total_reward)
 
     # ---- Save policy periodically ----
