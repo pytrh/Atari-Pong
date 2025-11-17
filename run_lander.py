@@ -54,7 +54,6 @@ print(f"Using device: {agent.device}")
 
 # ---------------- Main Training Loop ------------------
 avg_rewards = 0
-number_episodes = 0
 
 for episode in range(episodes):
     if episode % render_every < how_much_to_render and episode > 99:
@@ -75,12 +74,8 @@ for episode in range(episodes):
         state = next_state
         total_reward += reward
     
-    avg_rewards += 1/ (number_episodes + 1) * (total_reward - avg_rewards)
-    if number_episodes > 100:
-
-        avg_rewards = 0
-        number_episodes = 0
-    number_episodes += 1
+    if len(rewards) >=100:
+        avg_rewards = np.mean(rewards[-100:])
 
     # Save best models automatically (both episode and average)
     agent.save_best_model(total_reward, save_path='policies/lunar_best_episode.pth')
