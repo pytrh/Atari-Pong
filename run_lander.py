@@ -36,12 +36,14 @@ agent = DQNAgent(
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.9995,
+    epsilon_decay=0.9998,
     min_epsilon=0.01,
     per_alpha=0.6,
     per_beta=0.4,
-    target_update_frequency=1000,
-    total_training_steps=episodes * 200,  # Approx 200 steps per episode for LunarLander
+    target_update_frequency=2500,
+    total_training_steps=episodes * 20,  # Approx 200 steps per episode for LunarLander
+    batch_size=64,
+    buffer_capacity=200000,
     device="cpu",
 )
 
