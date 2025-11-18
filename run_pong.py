@@ -55,6 +55,7 @@ print(f"Using device: {agent.device}")
 
 # Optional: Load previous best model if it exists
 # agent.load_best_model('policies/pong_best_model.pth')
+# agent.load_best_model('policies/pong_best_avg.pth')
 
 # ---------------- Main Training Loop ------------------
 avg_rewards = 0

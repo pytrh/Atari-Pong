@@ -48,7 +48,7 @@ print(f"Using device: {agent.device}")
 
 # Optional: Load previous best model if it exists
 # agent.load_best_model('policies/lunar_best_model.pth')
-agent.load_best_model('policies/lunar_best_avg.pth')
+# agent.load_best_model('policies/lunar_best_avg.pth')
 
 # ---------------- Main Training Loop ------------------
 avg_rewards = 0
