@@ -30,7 +30,7 @@ rewards = []
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.005,
+    alpha=0.05,
     epsilon=1.0,
     epsilon_decay=0.999996,
     min_epsilon=0.01,
