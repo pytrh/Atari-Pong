@@ -9,10 +9,9 @@ import torch
 
 
 # --------- Saving Policy ---------
-save_policy = True       # Enable/Disable saving
-save_every = 300        # Save every X episodes
-PARAM = "test_numero_42_"  # Description of the parameters
+PARAM = "test_42_"  # Description of the parameters
 save_path = "policies/lunar_" + PARAM
+save_plot_every = 500
 add_info = {}
 
 
@@ -21,36 +20,40 @@ add_info = {}
 env_name = "LunarLander-v3"
 env = gym.make(env_name)
 
-episodes = 10000
-render_every = 1000
-how_much_to_render = 1
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+total_training_steps=300000
+# episodes = 10000
+render_every = 100000
+how_much_to_render = 0
 rewards = []
 
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.0005,
+    alpha=0.005,
     epsilon=1.0,
-    epsilon_decay=0.9996,
+    epsilon_decay=0.999996,
     min_epsilon=0.01,
     per_alpha=0.6,
     per_beta=0.4,
-    target_update_frequency=2500,
-    total_training_steps=episodes * 20,  # Approx 200 steps per episode for LunarLander
-    batch_size=64,
-    buffer_capacity=200000,
-    device="cpu",
+    target_update_frequency=1000,
+    total_training_steps=total_training_steps,
+    batch_size=128,
+    buffer_capacity=500000,
+    device="cuda",
 )
 
 print(f"Using device: {agent.device}")
 
 # Optional: Load previous best model if it exists
 # agent.load_best_model('policies/lunar_best_model.pth')
+# agent.load_best_model('policies/lunar_best_avg.pth')
 
 # ---------------- Main Training Loop ------------------
 avg_rewards = 0
 
-for episode in range(episodes):
+episode = 0
+while agent.training_steps < total_training_steps:
     if episode % render_every < how_much_to_render and episode > 99:
         env = gym.make(env_name, render_mode="human", **add_info)
     else:
@@ -73,37 +76,27 @@ for episode in range(episodes):
         avg_rewards = np.mean(rewards[-100:])
 
     # Save best models automatically (both episode and average)
-    agent.save_best_model(total_reward, save_path='policies/lunar_best_episode.pth')
-    agent.save_best_average_model(avg_rewards, save_path='policies/lunar_best_avg.pth')
+    agent.save_best_model(total_reward, save_path=f'policies/lunar_best_episode_time{timestamp}.pth')
+    agent.save_best_average_model(avg_rewards, save_path=f'policies/lunar_best_avg_time{timestamp}.pth')
 
-    print(f"Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
+    print(f"Step {agent.training_steps} | Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
     rewards.append(total_reward)
-
-    # ---- Save policy periodically ----
-    save_path_2 = save_path + f"avg{int(avg_rewards)}_ep{episode}.pth"
-    if save_policy and episode % save_every == 0 and episode > 0:
-        if hasattr(agent, "q_network"):
-            torch.save(agent.q_network.state_dict(), save_path_2)
-            print(f"Policy (q_network) saved at episode {episode} -> {save_path_2}")
-        elif hasattr(agent, "q_network_1"):
-            torch.save(agent.q_network_1.state_dict(), save_path_2)
-            print(f"Policy (q_network_1) saved at episode {episode} -> {save_path_2}")
-        elif hasattr(agent, "q_network_2"):
-            torch.save(agent.q_network_2.state_dict(), save_path_2)
-            print(f"Policy (q_network_2) saved at episode {episode} -> {save_path_2}")
-        elif hasattr(agent, "model"):
-            torch.save(agent.model.state_dict(), save_path_2)
-            print(f"Policy (model) saved at episode {episode} -> {save_path_2}")
-        else:
-            print("No neural network found in agent, skipping save...")
-
+    episode = episode + 1
     env.close()
 
-# Plot average reward over last 100 episodes
-avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewards))]
-plt.plot(avg_rewards)
-plt.xlabel("Episode")
-plt.ylabel("Average Reward (100 ep)")
-plt.title("Lunar Lander with Double Q-Learning, PER and Target Networks")
-timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-plt.savefig(f"plots/lunar_{timestamp}.png")
+    # ---- Save plots (average reward over last 100 episodes) periodically ----
+    if episode % save_plot_every == 0 and episode > 0:
+        avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewards))]
+        plt.plot(avg_rewards)
+        plt.xlabel("Episode")
+        plt.ylabel("Average Reward (100 ep)")
+        plt.title("Lunar Lander with Double Q-Learning, PER and Target Networks")
+        plt.savefig(f"plots/lunar_{timestamp}.png")
+
+    # Save last plot
+    avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewards))]
+    plt.plot(avg_rewards)
+    plt.xlabel("Episode")
+    plt.ylabel("Average Reward (100 ep)")
+    plt.title("Lunar Lander with Double Q-Learning, PER and Target Networks")
+    plt.savefig(f"plots/lunar_{timestamp}.png")
