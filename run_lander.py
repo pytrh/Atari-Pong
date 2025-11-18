@@ -3,8 +3,8 @@ import gymnasium as gym
 import numpy as np
 
 # from dqn_basic import DQNAgent
-from ddqn_basic import DQNAgent
-# from ddqn_uniform import DQNAgent
+# from ddqn_basic import DQNAgent
+from ddqn_uniform import DQNAgent
 
 import matplotlib.pyplot as plt
 import torch
