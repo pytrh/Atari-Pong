@@ -25,7 +25,7 @@ add_info = {}
 env_name = "LunarLander-v3"
 env = gym.make(env_name)
 
-episodes = 100000
+episodes = 10000
 render_every = 1000
 how_much_to_render = 1
 rewards = []
@@ -35,7 +35,7 @@ agent = DQNAgent(
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.9999,
+    epsilon_decay=0.9996,
     min_epsilon=0.01,
     per_alpha=0.6,
     per_beta=0.4,
