@@ -4,3 +4,5 @@ policies/*
 __pycache__
 .run_lander_step.py.swp
 .run_pong_step.py.swp
+.run_lander.py.swp
+.run_pong.py.swp
