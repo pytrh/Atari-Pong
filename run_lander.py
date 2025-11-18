@@ -21,9 +21,9 @@ add_info = {}
 env_name = "LunarLander-v3"
 env = gym.make(env_name)
 
-episodes = 20000
+episodes = 10000
 render_every = 1000
-how_much_to_render = 0
+how_much_to_render = 1
 rewards = []
 
 agent = DQNAgent(
@@ -31,7 +31,7 @@ agent = DQNAgent(
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.9998,
+    epsilon_decay=0.9996,
     min_epsilon=0.01,
     per_alpha=0.6,
     per_beta=0.4,
@@ -39,7 +39,7 @@ agent = DQNAgent(
     total_training_steps=episodes * 20,  # Approx 200 steps per episode for LunarLander
     batch_size=64,
     buffer_capacity=200000,
-    device="mps",
+    device="cpu",
 )
 
 print(f"Using device: {agent.device}")
