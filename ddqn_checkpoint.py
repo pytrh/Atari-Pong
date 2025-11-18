@@ -221,9 +221,11 @@ class DQNAgent:
             print(f"[Target networks updated at step {self.training_steps}]")
 
         # Decay epsilon at end of episode
-        if done:
-            self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
-            self.episodes_trained += 1
+        # if done:
+        #     self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
+        #     self.episodes_trained += 1
+        self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
+        self.episodes_trained += 1
         
         return True
     
