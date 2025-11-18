@@ -1,5 +1,4 @@
 # DQN basic implementation without experience replay and target network
-# Using device selection: CUDA > MPS > CPU
 
 import numpy as np
 import torch
@@ -33,11 +32,9 @@ class DQNAgent:
         self.state_dim = env.observation_space.shape[0]
         self.action_dim = env.action_space.n
         
-        # Device selection: CUDA > MPS > CPU
+        # Device selection: CUDA > CPU
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
-        elif torch.backends.mps.is_available():
-            self.device = torch.device("mps")
         else:
             self.device = torch.device("cpu")
         
