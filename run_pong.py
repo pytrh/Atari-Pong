@@ -38,7 +38,7 @@ rewards = []
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.0001,
+    alpha=0.00025,
     epsilon=1.0,
     epsilon_decay=0.999996,
     min_epsilon=0.01,
@@ -86,31 +86,31 @@ while agent.training_steps < total_training_steps:
         avg_rewards = np.mean(rewards[-100:])
 
     # Save best models automatically (both episode and average)
-    agent.save_best_model(total_reward, save_path='policies/pong_best_episode.pth')
-    agent.save_best_average_model(avg_rewards, save_path='policies/pong_best_avg.pth')
+    agent.save_best_model(total_reward, save_path='policies/pong_best_episode_time{timestamp}.pth')
+    agent.save_best_average_model(avg_rewards, save_path='policies/pong_best_avg_time{timestamp}.pth')
 
     print(f"Step {agent.training_steps} | Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
     rewards.append(total_reward)
-
-    # ---- Save policy periodically ----
-    save_path_2 = save_path + f"avg{int(avg_rewards)}_ep{episode}_time{timestamp}.pth"
-    if save_policy and episode % save_every == 0 and episode > 0:
-        if hasattr(agent, "q_network"):
-            torch.save(agent.q_network.state_dict(), save_path_2)
-            print(f"Policy (q_network) saved at episode {episode} -> {save_path_2}")
-        elif hasattr(agent, "q_network_1"):
-            torch.save(agent.q_network_1.state_dict(), save_path_2)
-            print(f"Policy (q_network_1) saved at episode {episode} -> {save_path_2}")
-        elif hasattr(agent, "q_network_2"):
-            torch.save(agent.q_network_2.state_dict(), save_path_2)
-            print(f"Policy (q_network_2) saved at episode {episode} -> {save_path_2}")
-        elif hasattr(agent, "model"):
-            torch.save(agent.model.state_dict(), save_path_2)
-            print(f"Policy (model) saved at episode {episode} -> {save_path_2}")
-        else:
-            print("No neural network found in agent, skipping save...")
     episode = episode + 1
     env.close()
+
+    # ---- Save policy periodically ----
+#    save_path_2 = save_path + f"avg{int(avg_rewards)}_ep{episode}_time{timestamp}"
+#    if save_policy and episode % save_every == 0 and episode > 0:
+#        if hasattr(agent, "q_network"):
+#            torch.save(agent.q_network.state_dict(), save_path_2)
+#            print(f"Policy (q_network) saved at episode {episode} -> {save_path_2}")
+#        if hasattr(agent, "q_network_1"):
+#            save_path_3 = save_path_2 + f"q1.pth"
+#            torch.save(agent.q_network_1.state_dict(), save_path_3)
+#            print(f"Policy (q_network_1) saved at episode {episode} -> {save_path_2}")
+#        if hasattr(agent, "q_network_2"):
+#            save_path_3 = save_path_2 + f"q2.pth"
+#            torch.save(agent.q_network_2.state_dict(), save_path_3)
+#            print(f"Policy (q_network_2) saved at episode {episode} -> {save_path_2}")
+#        if hasattr(agent, "model"):
+#            torch.save(agent.model.state_dict(), save_path_2)
+#            print(f"Policy (model) saved at episode {episode} -> {save_path_2}")
 
 # Plot average reward over last 100 episodes
 avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewards))]

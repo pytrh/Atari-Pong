@@ -95,6 +95,7 @@ class DQNAgent:
         # Double Q-Learning: Two main Q-networks
         self.q_network_1 = DQN(self.state_dim, self.action_dim).to(self.device)
         self.q_network_2 = DQN(self.state_dim, self.action_dim).to(self.device)
+        
         # Two target networks for stable Q-value targets
         self.target_network_1 = DQN(self.state_dim, self.action_dim).to(self.device)
         self.target_network_2 = DQN(self.state_dim, self.action_dim).to(self.device)
@@ -113,7 +114,7 @@ class DQNAgent:
         self.episodes_trained = 0
 
     def update_target_network(self):
-        """Copy weights from main networks to target networks (hard update)."""
+        """Copy w eights from main networks to target networks (hard update)."""
         self.target_network_1.load_state_dict(self.q_network_1.state_dict())
         self.target_network_2.load_state_dict(self.q_network_2.state_dict())
 
@@ -323,7 +324,7 @@ class DQNAgent:
             print(f"Warning: Model file {load_path} not found.")
             return None
         
-        checkpoint = torch.load(load_path, map_location=self.device)
+        checkpoint = torch.load(load_path, map_location=self.device, weights_only=False)
         
         # Load network states
         self.q_network_1.load_state_dict(checkpoint['q_network_1_state_dict'])
