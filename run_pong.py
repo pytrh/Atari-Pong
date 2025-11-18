@@ -37,7 +37,7 @@ rewards = []
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.0005,
+    alpha=0.005,
     epsilon=1.0,
     epsilon_decay=0.999996,
     min_epsilon=0.01,
@@ -98,3 +98,11 @@ while agent.training_steps < total_training_steps:
         plt.ylabel("Average Reward (100 ep)")
         plt.title("Pong with Double Q-Learning, PER and Target Networks")
         plt.savefig(f"plots/pong_{timestamp}.png")
+
+    # Save last plot
+    avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewards))]
+    plt.plot(avg_rewards)
+    plt.xlabel("Episode")
+    plt.ylabel("Average Reward (100 ep)")
+    plt.title("Pong with Double Q-Learning, PER and Target Networks")
+    plt.savefig(f"plots/pong_{timestamp}.png")
