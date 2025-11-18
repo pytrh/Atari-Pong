@@ -1,5 +1,4 @@
-# Double Q-Learning basic implementation without experience replay
-# Uses two Q-networks that alternate roles: one selects actions, the other evaluates them
+# Double Q-Learning basic implementation without experience replay nor target network
 
 import numpy as np
 import torch
@@ -43,7 +42,6 @@ class DQNAgent:
         
         self.q_network_1 = DQN(self.state_dim, self.action_dim).to(self.device)
         self.q_network_2 = DQN(self.state_dim, self.action_dim).to(self.device)
-        # Separate optimizers for each network using RMSProp
         self.optimizer_1 = optim.RMSprop(self.q_network_1.parameters(), lr=alpha)
         self.optimizer_2 = optim.RMSprop(self.q_network_2.parameters(), lr=alpha)
         self.loss_fn = nn.MSELoss()
@@ -75,10 +73,11 @@ class DQNAgent:
                 target_q = reward + (0 if done else self.gamma * next_q_value)
 
             target_q = torch.tensor([target_q], dtype=torch.float32).to(self.device)
+
             q_values_1 = self.q_network_1(state_tensor)
             q_value = q_values_1[0, action].unsqueeze(0)
-            loss = self.loss_fn(q_value, target_q)
 
+            loss = self.loss_fn(q_value, target_q)
             self.optimizer_1.zero_grad()
             loss.backward()
             self.optimizer_1.step()
@@ -92,10 +91,11 @@ class DQNAgent:
                 target_q = reward + (0 if done else self.gamma * next_q_value)
 
             target_q = torch.tensor([target_q], dtype=torch.float32).to(self.device)
+
             q_values_2 = self.q_network_2(state_tensor)
             q_value = q_values_2[0, action].unsqueeze(0)
-            loss = self.loss_fn(q_value, target_q)
 
+            loss = self.loss_fn(q_value, target_q)
             self.optimizer_2.zero_grad()
             loss.backward()
             self.optimizer_2.step()
