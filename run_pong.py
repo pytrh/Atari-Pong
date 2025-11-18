@@ -4,11 +4,6 @@ import ale_py
 from gymnasium.wrappers import FrameStackObservation, FlattenObservation
 import numpy as np
 
-# from dqn_basic import DQNAgent
-# from ddqn_basic import DQNAgent
-# from ddqn_uniform import DQNAgent
-# from ddqn_per import DQNAgent
-# from ddqn_target import DQNAgent
 from ddqn_checkpoint import DQNAgent
 
 import matplotlib.pyplot as plt

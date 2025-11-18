@@ -2,11 +2,6 @@ import datetime
 import gymnasium as gym
 import numpy as np
 
-# from dqn_basic import DQNAgent
-# from ddqn_basic import DQNAgent
-# from ddqn_uniform import DQNAgent
-# from ddqn_per import DQNAgent
-# from ddqn_target import DQNAgent
 from ddqn_checkpoint import DQNAgent
 
 import matplotlib.pyplot as plt
