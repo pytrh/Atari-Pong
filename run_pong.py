@@ -35,14 +35,14 @@ agent = DQNAgent(
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.999999,
+    epsilon_decay=0.99992,
     min_epsilon=0.01
 )
 
 print(f"Using device: {agent.device}")
 
 
-episodes = 100000
+episodes = 60000
 render_every = 1000
 how_much_to_render = 0
 rewards = []
