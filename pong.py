@@ -15,7 +15,6 @@ save_path = "policies/pong_" + PARAM
 save_plot_every = 100
 add_info = {}
 
-
 # ------------------ Environment and Agent Setup ------------------
 
 gym.register_envs(ale_py)
@@ -28,7 +27,7 @@ env = FrameStackObservation(env, stack_size=4, padding_type="zero")
 env = FlattenObservation(env)
 
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-total_training_steps=300000
+total_training_steps=600000
 # episodes = 10000
 render_every = 1000
 how_much_to_render = 0
