@@ -39,7 +39,7 @@ agent = DQNAgent(
 
 episodes = 100000
 render_every = 200
-how_much_to_render = 1
+how_much_to_render = 0
 rewards = []
 
 
@@ -98,4 +98,5 @@ avg_rewards = [np.mean(rewards[max(0, i - 100): i + 1]) for i in range(len(rewar
 plt.plot(avg_rewards)
 plt.xlabel("Episode")
 plt.ylabel("Average Reward (100 ep)")
+plt.title("Pong-v5 with basic DQN")
 plt.show()
