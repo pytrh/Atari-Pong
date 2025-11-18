@@ -1,6 +1,4 @@
 .venv
-policies/*
-!policies/.gitkeep
 __pycache__
 .run_lander_step.py.swp
 .run_pong_step.py.swp
