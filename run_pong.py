@@ -28,7 +28,7 @@ env = FrameStackObservation(env, stack_size=4, padding_type="zero")
 env = FlattenObservation(env)
 
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-total_training_steps=1000000
+total_training_steps=300000
 # episodes = 10000
 render_every = 1000
 how_much_to_render = 0
@@ -39,7 +39,7 @@ agent = DQNAgent(
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.99998,
+    epsilon_decay=0.999996,
     min_epsilon=0.01,
     per_alpha=0.6,
     per_beta=0.4,
@@ -61,11 +61,6 @@ avg_rewards = 0
 
 episode = 0
 while agent.training_steps < total_training_steps:
-   #  if episode % render_every < how_much_to_render and episode > 99:
-   #      env = gym.make(env_name, render_mode="human", **add_info)
-   #  else:
-   #      env = gym.make(env_name, **add_info)
-
     env = gym.make(env_name, render_mode=None, **add_info)
     env = FrameStackObservation(env, stack_size=4, padding_type="zero")
     env = FlattenObservation(env)

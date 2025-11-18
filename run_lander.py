@@ -92,4 +92,3 @@ while agent.training_steps < total_training_steps:
         plt.ylabel("Average Reward (100 ep)")
         plt.title("Lunar Lander with Double Q-Learning, PER and Target Networks")
         plt.savefig(f"plots/lunar_{timestamp}.png")
-
