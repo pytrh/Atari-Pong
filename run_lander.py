@@ -21,10 +21,10 @@ env_name = "LunarLander-v3"
 env = gym.make(env_name)
 
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-total_training_steps=300000
+total_training_steps=600000
 # episodes = 10000
-render_every = 100000
-how_much_to_render = 0
+render_every = 100
+how_much_to_render = 3
 rewards = []
 
 agent = DQNAgent(
@@ -45,14 +45,13 @@ agent = DQNAgent(
 
 print(f"Using device: {agent.device}")
 
-# Optional: Load previous best model if it exists
-# agent.load_best_model('policies/lunar_best_model.pth')
-# agent.load_best_model('policies/lunar_best_avg.pth')
-
 # ---------------- Main Training Loop ------------------
 avg_rewards = 0
-
 episode = 0
+
+# Optional: Load previous best model if it exists
+agent.load_best_model('policies/lunar_best_avg_time20251118_193412.pth')
+
 while agent.training_steps < total_training_steps:
     if episode % render_every < how_much_to_render and episode > 99:
         env = gym.make(env_name, render_mode="human", **add_info)
@@ -74,6 +73,8 @@ while agent.training_steps < total_training_steps:
     
     if len(rewards) >=100:
         avg_rewards = np.mean(rewards[-100:])
+    else:
+        avg_rewards = np.mean(rewards)
 
     # Save best models automatically (both episode and average)
     agent.save_best_model(total_reward, save_path=f'policies/lunar_best_episode_time{timestamp}.pth')

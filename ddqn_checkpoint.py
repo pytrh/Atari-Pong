@@ -347,8 +347,8 @@ class DQNAgent:
         self.replay_buffer.alpha = checkpoint['replay_buffer_alpha']
         self.replay_buffer.beta = checkpoint['replay_buffer_beta']
         
-        print(f"Model loaded from {load_path}")
-        print(f"Episode: {self.episodes_trained}, Best Episode Reward: {self.best_reward:.2f}, Best Avg Reward: {self.best_avg_reward:.2f}")
-        print(f"Training Steps: {self.training_steps}, Epsilon: {self.epsilon:.4f}")
-        
-        return checkpoint
+#         print(f"Model loaded from {load_path}")
+#         print(f"Episode: {self.episodes_trained}, Best Episode Reward: {self.best_reward:.2f}, Best Avg Reward: {self.best_avg_reward:.2f}")
+#         print(f"Training Steps: {self.training_steps}, Epsilon: {self.epsilon:.4f}")
+#         
+#         return checkpoint
