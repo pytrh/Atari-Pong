@@ -30,7 +30,7 @@ rewards = []
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.00025,
+    alpha=0.0005,
     epsilon=1.0,
     epsilon_decay=0.999996,
     min_epsilon=0.01,
@@ -76,8 +76,13 @@ while agent.training_steps < total_training_steps:
         avg_rewards = np.mean(rewards[-100:])
 
     # Save best models automatically (both episode and average)
-    agent.save_best_model(total_reward, save_path='policies/lunar_best_episode_time{timestamp}.pth')
-    agent.save_best_average_model(avg_rewards, save_path='policies/lunar_best_avg_time{timestamp}.pth')
+    agent.save_best_model(total_reward, save_path=f'policies/lunar_best_episode_time{timestamp}.pth')
+    agent.save_best_average_model(avg_rewards, save_path=f'policies/lunar_best_avg_time{timestamp}.pth')
+
+    print(f"Step {agent.training_steps} | Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
+    rewards.append(total_reward)
+    episode = episode + 1
+    env.close()
 
     # ---- Save plots (average reward over last 100 episodes) periodically ----
     if episode % save_plot_every == 0 and episode > 0:
@@ -88,7 +93,3 @@ while agent.training_steps < total_training_steps:
         plt.title("Lunar Lander with Double Q-Learning, PER and Target Networks")
         plt.savefig(f"plots/lunar_{timestamp}.png")
 
-    print(f"Step {agent.training_steps} | Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
-    rewards.append(total_reward)
-    episode = episode + 1
-    env.close()

@@ -9,7 +9,6 @@ from ddqn_checkpoint import DQNAgent
 import matplotlib.pyplot as plt
 import torch
 
-
 # --------- Saving Policy ---------
 PARAM = "test_42_"  # Description of the parameters
 save_path = "policies/pong_" + PARAM
@@ -23,7 +22,8 @@ gym.register_envs(ale_py)
 env_name = 'ALE/Pong-v5'
 add_info = {'obs_type': "ram"}
 
-env = gym.make(env_name, render_mode="human", **add_info)
+# env = gym.make(env_name, render_mode="human", **add_info)
+env = gym.make(env_name, render_mode=None, **add_info)
 env = FrameStackObservation(env, stack_size=4, padding_type="zero")
 env = FlattenObservation(env)
 
@@ -37,7 +37,7 @@ rewards = []
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.00025,
+    alpha=0.0005,
     epsilon=1.0,
     epsilon_decay=0.99998,
     min_epsilon=0.01,
@@ -61,11 +61,12 @@ avg_rewards = 0
 
 episode = 0
 while agent.training_steps < total_training_steps:
-    if episode % render_every < how_much_to_render and episode > 99:
-        env = gym.make(env_name, render_mode="human", **add_info)
-    else:
-        env = gym.make(env_name, **add_info)
+   #  if episode % render_every < how_much_to_render and episode > 99:
+   #      env = gym.make(env_name, render_mode="human", **add_info)
+   #  else:
+   #      env = gym.make(env_name, **add_info)
 
+    env = gym.make(env_name, render_mode=None, **add_info)
     env = FrameStackObservation(env, stack_size=4, padding_type="zero")
     env = FlattenObservation(env)
     
@@ -86,8 +87,13 @@ while agent.training_steps < total_training_steps:
         avg_rewards = np.mean(rewards[-100:])
 
     # Save best models automatically (both episode and average)
-    agent.save_best_model(total_reward, save_path='policies/pong_best_episode_time{timestamp}.pth')
-    agent.save_best_average_model(avg_rewards, save_path='policies/pong_best_avg_time{timestamp}.pth')
+    agent.save_best_model(total_reward, save_path=f'policies/pong_best_episode_time{timestamp}.pth')
+    agent.save_best_average_model(avg_rewards, save_path=f'policies/pong_best_avg_time{timestamp}.pth')
+
+    print(f"Step {agent.training_steps} | Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
+    rewards.append(total_reward)
+    episode = episode + 1
+    env.close()
 
     # ---- Save plots (average reward over last 100 episodes) periodically ----
     if episode % save_plot_every == 0 and episode > 0:
@@ -97,8 +103,3 @@ while agent.training_steps < total_training_steps:
         plt.ylabel("Average Reward (100 ep)")
         plt.title("Pong with Double Q-Learning, PER and Target Networks")
         plt.savefig(f"plots/pong_{timestamp}.png")
-
-    print(f"Step {agent.training_steps} | Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
-    rewards.append(total_reward)
-    episode = episode + 1
-    env.close()
