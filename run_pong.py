@@ -38,7 +38,7 @@ agent = DQNAgent(
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.9999,
+    epsilon_decay=0.99992,
     min_epsilon=0.01,
     per_alpha=0.6,
     per_beta=0.4,
@@ -46,7 +46,7 @@ agent = DQNAgent(
     total_training_steps=episodes * 5000,  # Approx 5k-10k steps per Pong episode
     batch_size=64,
     buffer_capacity=200000,
-    device="mps",
+    device="cpu",
 )
 
 print(f"Using device: {agent.device}")
