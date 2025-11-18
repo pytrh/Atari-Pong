@@ -39,7 +39,7 @@ agent = DQNAgent(
     total_training_steps=episodes * 20,  # Approx 200 steps per episode for LunarLander
     batch_size=64,
     buffer_capacity=200000,
-    device="cpu",
+    device="mps",
 )
 
 print(f"Using device: {agent.device}")
