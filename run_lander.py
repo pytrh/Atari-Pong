@@ -3,8 +3,8 @@ import gymnasium as gym
 import numpy as np
 
 # from dqn_basic import DQNAgent
-# from ddqn_basic import DQNAgent
-from ddqn_uniform import DQNAgent
+from ddqn_basic import DQNAgent
+# from ddqn_uniform import DQNAgent
 
 import matplotlib.pyplot as plt
 import torch
@@ -29,7 +29,7 @@ agent = DQNAgent(
     gamma=0.99,
     alpha=0.0005,
     epsilon=1.0,
-    epsilon_decay=0.9999,
+    epsilon_decay=0.9993,
     min_epsilon=0.01
 )
 

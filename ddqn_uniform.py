@@ -25,7 +25,7 @@ class DQN(nn.Module):
 
 class DQNAgent:
     def __init__(self, env, gamma=0.95, alpha=0.001, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.01,
-                 buffer_capacity=10000, batch_size=32, min_buffer_size=1000):
+                 buffer_capacity=20000, batch_size=64, min_buffer_size=1000):
         self.env = env
         self.gamma = gamma
         self.epsilon = epsilon
