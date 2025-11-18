@@ -15,7 +15,6 @@ save_path = "policies/pong_" + PARAM
 save_plot_every = 100
 add_info = {}
 
-
 # ------------------ Environment and Agent Setup ------------------
 
 gym.register_envs(ale_py)
@@ -28,7 +27,7 @@ env = FrameStackObservation(env, stack_size=4, padding_type="zero")
 env = FlattenObservation(env)
 
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-total_training_steps=300000
+total_training_steps=600000
 # episodes = 10000
 render_every = 1000
 how_much_to_render = 0
@@ -37,7 +36,7 @@ rewards = []
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.005,
+    alpha=0.05,
     epsilon=1.0,
     epsilon_decay=0.999996,
     min_epsilon=0.01,
@@ -52,14 +51,13 @@ agent = DQNAgent(
 
 print(f"Using device: {agent.device}")
 
-# Optional: Load previous best model if it exists
-# agent.load_best_model('policies/pong_best_model.pth')
-# agent.load_best_model('policies/pong_best_avg.pth')
-
 # ---------------- Main Training Loop ------------------
 avg_rewards = 0
-
 episode = 0
+
+# Optional: Load previous best model
+agent.load_best_model('pong_best_episode_time20251118_194509.pth')
+
 while agent.training_steps < total_training_steps:
     env = gym.make(env_name, render_mode=None, **add_info)
     env = FrameStackObservation(env, stack_size=4, padding_type="zero")
@@ -80,6 +78,8 @@ while agent.training_steps < total_training_steps:
     
     if len(rewards) >=100:
         avg_rewards = np.mean(rewards[-100:])
+    else:
+        avg_rewards = np.mean(rewards)
 
     # Save best models automatically (both episode and average)
     agent.save_best_model(total_reward, save_path=f'policies/pong_best_episode_time{timestamp}.pth')
