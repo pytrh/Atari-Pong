@@ -52,7 +52,7 @@ episode = 0
 agent.load_best_model('policies/lunar_best_avg_time20251118_193412.pth')
 
 while agent.training_steps < total_training_steps:
-    if episode % render_every < how_much_to_render and episode > 99:
+    if episode % render_every < how_much_to_render:
         env = gym.make(env_name, render_mode="human", **add_info)
     else:
         env = gym.make(env_name, **add_info)
@@ -79,8 +79,8 @@ while agent.training_steps < total_training_steps:
     agent.save_best_model(total_reward, save_path=f'policies/lunar_best_episode_time{timestamp}.pth')
     agent.save_best_average_model(avg_rewards, save_path=f'policies/lunar_best_avg_time{timestamp}.pth')
 
-    print(f"Step {agent.training_steps} | Episode {episode} | Avg {avg_rewards:.2f} | Best Ep {agent.best_reward:.2f} | Best Avg {agent.best_avg_reward:.2f} | Epsilon {agent.epsilon:.3f} | Learning rate {agent.alpha}")
-    # print(f"PER Beta {agent.per_beta}")
+    print(f"Step {agent.training_steps} | Episode {episode} | Avg {avg_rewards:.2f} | Best Ep {agent.best_reward:.2f} | Best Avg {agent.best_avg_reward:.2f} | Epsilon {agent.epsilon:.3f}")
+    # print(f"PER Beta {agent.replay_buffer.per_beta}")
     rewards.append(total_reward)
     episode = episode + 1
     env.close()
