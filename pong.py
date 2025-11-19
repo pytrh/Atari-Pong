@@ -44,7 +44,6 @@ agent = DQNAgent(
     total_training_steps=total_training_steps,
     batch_size=128,
     buffer_capacity=500000,
-    device="cuda",
 )
 
 print(f"Using device: {agent.device}")

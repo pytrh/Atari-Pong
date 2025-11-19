@@ -85,13 +85,13 @@ class DQNAgent:
         self.target_update_frequency = target_update_frequency
         self.training_steps = 0  # Counter for training steps
         
-        # if torch.cuda.is_available():
-        #     self.device = torch.device("cuda")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
         # elif torch.backends.mps.is_available():
         #     self.device = torch.device("mps")
         # TODO: Why mps appears to be so much slower than cpu?
-        # else:
-        #     self.device = torch.device("cpu")
+        else:
+            self.device = torch.device("cpu")
         
         # Double Q-Learning: Two main Q-networks
         self.q_network_1 = DQN(self.state_dim, self.action_dim).to(self.device)
