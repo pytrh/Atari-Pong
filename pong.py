@@ -26,9 +26,9 @@ env = FrameStackObservation(env, stack_size=4, padding_type="zero")
 env = FlattenObservation(env)
 
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-total_training_steps=300000
+total_training_steps=400000
 render_every = 1
-how_much_to_render = 0
+how_much_to_render = 1
 rewards = []
 
 agent = DQNAgent(
