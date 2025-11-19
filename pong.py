@@ -21,22 +21,20 @@ gym.register_envs(ale_py)
 env_name = 'ALE/Pong-v5'
 add_info = {'obs_type': "ram"}
 
-# env = gym.make(env_name, render_mode="human", **add_info)
 env = gym.make(env_name, render_mode=None, **add_info)
 env = FrameStackObservation(env, stack_size=4, padding_type="zero")
 env = FlattenObservation(env)
 
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 total_training_steps=600000
-# episodes = 10000
-render_every = 1000
-how_much_to_render = 0
+render_every = 1
+how_much_to_render = 1
 rewards = []
 
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.05,
+    alpha=0.00025,
     epsilon=1.0,
     epsilon_decay=0.999996,
     min_epsilon=0.01,
@@ -46,7 +44,6 @@ agent = DQNAgent(
     total_training_steps=total_training_steps,
     batch_size=128,
     buffer_capacity=500000,
-    device="cuda",
 )
 
 print(f"Using device: {agent.device}")
@@ -56,10 +53,13 @@ avg_rewards = 0
 episode = 0
 
 # Optional: Load previous best model
-agent.load_best_model('pong_best_episode_time20251118_194509.pth')
+agent.load_best_model('policies/pong_best_avg_time20251119_115820.pth') # Avg: -18
 
 while agent.training_steps < total_training_steps:
-    env = gym.make(env_name, render_mode=None, **add_info)
+    if episode % render_every < how_much_to_render:
+        env = gym.make(env_name, render_mode="human", **add_info)
+    else:
+        env = gym.make(env_name, render_mode=None, **add_info)
     env = FrameStackObservation(env, stack_size=4, padding_type="zero")
     env = FlattenObservation(env)
     
@@ -85,7 +85,8 @@ while agent.training_steps < total_training_steps:
     agent.save_best_model(total_reward, save_path=f'policies/pong_best_episode_time{timestamp}.pth')
     agent.save_best_average_model(avg_rewards, save_path=f'policies/pong_best_avg_time{timestamp}.pth')
 
-    print(f"Step {agent.training_steps} | Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
+    print(f"Step {agent.training_steps} | Episode {episode} | Avg {avg_rewards:.2f} | Best Ep {agent.best_reward:.2f} | Best Avg {agent.best_avg_reward:.2f} | Epsilon {agent.epsilon:.3f}")
+    # print(f"PER Beta {agent.replay_buffer.per_beta}")
     rewards.append(total_reward)
     episode = episode + 1
     env.close()

@@ -52,6 +52,7 @@ class DQNAgent:
             per_epsilon: Small constant to prevent zero priorities
             total_training_steps: Expected total training steps (used to calculate beta_increment if not provided)
         """
+        self.alpha = alpha
         self.device = device
         self.env = env
         self.gamma = gamma
@@ -84,13 +85,13 @@ class DQNAgent:
         self.target_update_frequency = target_update_frequency
         self.training_steps = 0  # Counter for training steps
         
-        # if torch.cuda.is_available():
-        #     self.device = torch.device("cuda")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
         # elif torch.backends.mps.is_available():
         #     self.device = torch.device("mps")
         # TODO: Why mps appears to be so much slower than cpu?
-        # else:
-        #     self.device = torch.device("cpu")
+        else:
+            self.device = torch.device("cpu")
         
         # Double Q-Learning: Two main Q-networks
         self.q_network_1 = DQN(self.state_dim, self.action_dim).to(self.device)
@@ -262,6 +263,7 @@ class DQNAgent:
                 'training_steps': self.training_steps,
                 'replay_buffer_alpha': self.replay_buffer.alpha,
                 'replay_buffer_beta': self.replay_buffer.beta,
+            # TODO: Save replay buffer!!
             }
             
             torch.save(checkpoint, save_path)
