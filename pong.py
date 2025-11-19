@@ -28,7 +28,7 @@ env = FlattenObservation(env)
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 total_training_steps=600000
 render_every = 1
-how_much_to_render = 0
+how_much_to_render = 1
 rewards = []
 
 agent = DQNAgent(
@@ -53,8 +53,7 @@ avg_rewards = 0
 episode = 0
 
 # Optional: Load previous best model
-# agent.load_best_model('policies/pong_best_avg_time20251119_115820.pth') # Avg: -18
-agent.load_best_model('policies/pong_best_avg_time20251119_131728.pth')
+agent.load_best_model('policies/pong_best_avg_time20251119_115820.pth') # Avg: -18
 
 while agent.training_steps < total_training_steps:
     if episode % render_every < how_much_to_render:
