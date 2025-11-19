@@ -54,7 +54,7 @@ avg_rewards = 0
 episode = 0
 
 # Optional: Load previous best model
-# agent.load_best_model('pong_best_episode_time20251118_194509.pth')
+# agent.load_best_model('policies/pong_best_episode_time20251118_194509.pth')
 
 while agent.training_steps < total_training_steps:
     if episode % render_every < how_much_to_render and episode > 99:
