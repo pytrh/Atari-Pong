@@ -52,6 +52,7 @@ class DQNAgent:
             per_epsilon: Small constant to prevent zero priorities
             total_training_steps: Expected total training steps (used to calculate beta_increment if not provided)
         """
+        self.alpha = alpha
         self.device = device
         self.env = env
         self.gamma = gamma

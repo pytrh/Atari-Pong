@@ -23,14 +23,14 @@ env = gym.make(env_name)
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 total_training_steps=600000
 # episodes = 10000
-render_every = 100
-how_much_to_render = 3
+render_every = 1
+how_much_to_render = 1
 rewards = []
 
 agent = DQNAgent(
     env,
     gamma=0.99,
-    alpha=0.05,
+    alpha=0.00025,
     epsilon=1.0,
     epsilon_decay=0.999996,
     min_epsilon=0.01,
@@ -80,7 +80,8 @@ while agent.training_steps < total_training_steps:
     agent.save_best_model(total_reward, save_path=f'policies/lunar_best_episode_time{timestamp}.pth')
     agent.save_best_average_model(avg_rewards, save_path=f'policies/lunar_best_avg_time{timestamp}.pth')
 
-    print(f"Step {agent.training_steps} | Episode {episode} | Avg: {avg_rewards:.2f} | Best Ep: {agent.best_reward:.2f} | Best Avg: {agent.best_avg_reward:.2f} | Epsilon: {agent.epsilon:.3f} | Reward: {total_reward:.2f}")
+    print(f"Step {agent.training_steps} | Episode {episode} | Avg {avg_rewards:.2f} | Best Ep {agent.best_reward:.2f} | Best Avg {agent.best_avg_reward:.2f} | Epsilon {agent.epsilon:.3f} | Learning rate {agent.alpha}")
+    # print(f"PER Beta {agent.per_beta}")
     rewards.append(total_reward)
     episode = episode + 1
     env.close()
