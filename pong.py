@@ -1,3 +1,8 @@
+"""Training script for DQN agent on Atari Pong environment with frame stacking and flattened observations.
+
+This module trains a Double DQN agent with prioritized experience replay on the ALE/Pong-v5 environment using RAM observations. It applies frame stacking (4 frames) and observation flattening as preprocessing steps. The script includes functionality for saving agent policies, plotting training progress, and checkpointing training state.
+"""
+
 import datetime
 import gymnasium as gym
 import ale_py
