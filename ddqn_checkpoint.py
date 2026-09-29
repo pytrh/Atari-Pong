@@ -1,3 +1,12 @@
+"""Double Q-Learning agent implementation with target networks and prioritized experience replay.
+
+This module implements a Deep Q-Network (DQN) agent that uses double Q-learning with target networks and prioritized experience replay (PER). The agent maintains two Q-networks that alternate roles, each with their own target network that is periodically updated. The prioritized replay buffer uses importance sampling to improve learning efficiency by prioritizing experiences with higher temporal difference errors.
+
+Classes:
+    DQN: Neural network model for Q-value approximation with fully connected layers.
+    DQNAgent: Main agent class implementing double DQN with target networks and PER.
+"""
+
 # Double Q-Learning with Target Networks and Prioritized Experience Replay (PER)
 # Uses two Q-networks that alternate roles, each with their own target network
 # Target networks are periodically updated (hard copied) from their corresponding main networks
@@ -12,7 +21,26 @@ from replay_buffer import PrioritizedReplayBuffer
 
 
 class DQN(nn.Module):
+    """Deep Q-Network (DQN) neural network for reinforcement learning.
+
+    A fully connected neural network with two hidden layers of 128 units each,
+    using ReLU activation functions. Takes state observations as input and
+    outputs Q-values for each possible action.
+
+    Args:
+        input_dim (int): Dimension of the input state space.
+        output_dim (int): Number of possible actions (output Q-values).
+    """
     def __init__(self, input_dim, output_dim):
+        """Initialize a Deep Q-Network with a three-layer fully connected architecture.
+
+        Creates a neural network with two hidden layers of 128 units each, using ReLU
+        activation functions between layers.
+
+        Args:
+            input_dim (int): Dimension of the input state space.
+            output_dim (int): Dimension of the output action space.
+        """
         super(DQN, self).__init__()
         self.net = nn.Sequential(
             nn.Linear(input_dim, 128),
@@ -23,9 +51,24 @@ class DQN(nn.Module):
         )
 
     def forward(self, x):
+        """Forward pass through the DQN network.
+
+        Args:
+            x: Input tensor to pass through the network.
+
+        Returns:
+            Output tensor from the network.
+        """
         return self.net(x)
 
 class DQNAgent:
+    """Deep Q-Network agent with target network and prioritized experience replay.
+
+    Implements DQN algorithm for reinforcement learning with epsilon-greedy exploration,
+    experience replay buffer with prioritized sampling, and periodic target network updates.
+    The agent learns to approximate Q-values using neural networks and can be trained
+    on any discrete action space gym environment.
+    """
     def __init__(self, env, gamma=0.95, alpha=0.00025, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.05,
                  buffer_capacity=100000, batch_size=32, min_buffer_size=1000,
                  target_update_frequency=1000,
