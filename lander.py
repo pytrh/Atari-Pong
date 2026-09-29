@@ -1,3 +1,21 @@
+"""Lunar Lander training script using Double DQN with Prioritized Experience Replay.
+
+This module implements a complete training pipeline for the LunarLander-v3 environment
+using a Double Deep Q-Network (DDQN) agent with Prioritized Experience Replay (PER).
+The script handles environment setup, agent configuration, training loop execution,
+model saving, and performance visualization.
+
+Key Features:
+- Double DQN with target network updates
+- Prioritized Experience Replay for efficient learning
+- Automatic best model saving (both episode and average rewards)
+- Real-time training visualization and plotting
+- Configurable rendering for monitoring training progress
+
+The training loop continues until the specified number of training steps is reached,
+with periodic saving of performance plots and automatic checkpointing of the best
+performing models.
+"""
 import datetime
 import gymnasium as gym
 import numpy as np
