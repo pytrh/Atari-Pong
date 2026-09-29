@@ -1,3 +1,8 @@
+"""Training module for a Deep Q-Network (DQN) agent on the Atari Pong environment.
+
+This module sets up and configures a DQN agent to learn playing Pong using the ALE/Pong-v5 environment from Gymnasium. The environment is wrapped with frame stacking and observation flattening for improved learning. The module includes configuration for training parameters, policy saving, and visualization settings.
+"""
+
 import datetime
 import gymnasium as gym
 import ale_py
