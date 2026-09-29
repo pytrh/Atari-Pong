@@ -1,3 +1,8 @@
+"""Dueling Double Q-Learning with Target Networks and Prioritized Experience Replay (PER).
+
+This module implements a dueling DQN architecture that splits the Q-network into separate value and advantage streams, following the approach of Wang et al. (2016). The Q-values are computed as Q(s,a) = V(s) + (A(s,a) - mean_a' A(s,a')). All Double-Q learning, PER, and target network functionality is inherited from DQNAgent, making this a drop-in replacement that can be used by simply changing the import statement.
+"""
+
 # Dueling Double Q-Learning with Target Networks and Prioritized Experience Replay (PER)
 # Drop-in replacement for DQNAgent: splits the Q-network into a state-value stream
 # and a state-dependent action-advantage stream, recombined as
@@ -14,7 +19,20 @@ from ddqn_checkpoint import DQNAgent
 
 
 class DuelingDQN(nn.Module):
+    """A Dueling Deep Q-Network implementation that separates value and advantage estimation.
+
+    This neural network architecture splits the Q-value computation into two streams:
+    a value stream that estimates the state value V(s) and an advantage stream that
+    estimates the advantage A(s,a) for each action. The final Q-values are computed
+    by combining these streams using mean-subtraction aggregation for identifiability.
+    """
     def __init__(self, input_dim, output_dim):
+        """Initialize a Dueling Deep Q-Network with separate value and advantage streams.
+
+        Args:
+            input_dim (int): Dimension of the input state space.
+            output_dim (int): Dimension of the output action space.
+        """
         super(DuelingDQN, self).__init__()
         self.feature = nn.Sequential(
             nn.Linear(input_dim, 128), nn.ReLU(), nn.Linear(128, 128), nn.ReLU()
@@ -27,6 +45,18 @@ class DuelingDQN(nn.Module):
         )
 
     def forward(self, x):
+        """Forward pass through the Dueling DQN network.
+
+        Computes Q-values by combining value and advantage streams using mean-subtraction
+        aggregation for identifiability as described in Wang et al. (2016).
+
+        Args:
+            x: Input tensor representing the state or observation.
+
+        Returns:
+            Tensor of Q-values with the same batch size as input, where each row
+            contains Q-values for all possible actions.
+        """
         features = self.feature(x)
         value = self.value_stream(features)
         advantage = self.advantage_stream(features)
@@ -35,5 +65,15 @@ class DuelingDQN(nn.Module):
 
 
 class DuelingDQNAgent(DQNAgent):
+    """A Deep Q-Network agent that uses dueling network architecture to separately estimate state values and action advantages.
+
+    Inherits from DQNAgent and implements the dueling DQN algorithm, which splits the Q-value estimation into separate value and advantage streams that are combined to produce final Q-values. This architecture often leads to better performance by learning which states are valuable independent of the action taken.
+    """
     def __init__(self, *args, **kwargs):
+        """Initialize a DuelingDQNAgent instance.
+
+        Args:
+            *args: Variable length argument list passed to parent class.
+            **kwargs: Arbitrary keyword arguments passed to parent class.
+        """
         super(DuelingDQNAgent, self).__init__(*args, **kwargs)
