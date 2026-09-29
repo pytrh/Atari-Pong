@@ -1,3 +1,8 @@
+"""Double Q-Learning agent implementation with target networks and prioritized experience replay.
+
+This module implements a Deep Q-Network (DQN) agent that uses double Q-learning to reduce overestimation bias, target networks for stable training, and prioritized experience replay (PER) for efficient learning from important experiences. The agent maintains two Q-networks that alternate roles during training, each with corresponding target networks that are periodically updated through hard copying.
+"""
+
 # Double Q-Learning with Target Networks and Prioritized Experience Replay (PER)
 # Uses two Q-networks that alternate roles, each with their own target network
 # Target networks are periodically updated (hard copied) from their corresponding main networks
@@ -12,7 +17,17 @@ from replay_buffer import PrioritizedReplayBuffer
 
 
 class DQN(nn.Module):
+    """Deep Q-Network implementation with fully connected layers.
+
+    A neural network for approximating Q-values in reinforcement learning, consisting of two hidden layers with 128 units each and ReLU activation functions.
+    """
     def __init__(self, input_dim, output_dim):
+        """Initialize the DQN with specified input and output dimensions.
+
+        Args:
+            input_dim: Dimension of the input state space
+            output_dim: Dimension of the output action space
+        """
         super(DQN, self).__init__()
         self.net = nn.Sequential(
             nn.Linear(input_dim, 128),
@@ -23,9 +38,21 @@ class DQN(nn.Module):
         )
 
     def forward(self, x):
+        """Forward pass through the network to compute Q-values.
+
+        Args:
+            x: Input tensor representing the state
+
+        Returns:
+            Output tensor containing Q-values for each action
+        """
         return self.net(x)
 
 class DQNAgent:
+    """DQN agent with double Q-learning, target networks, and prioritized experience replay.
+
+    Implements a Deep Q-Network agent that uses two Q-networks alternating roles to reduce overestimation bias, target networks for stable training, and prioritized experience replay for efficient learning from important experiences. The agent maintains separate target networks that are periodically updated through hard copying from the main networks.
+    """
     def __init__(self, env, gamma=0.95, alpha=0.00025, epsilon=0.1, epsilon_decay=0.995, min_epsilon=0.05,
                  buffer_capacity=100000, batch_size=32, min_buffer_size=1000,
                  target_update_frequency=1000,
