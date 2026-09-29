@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Documentation Agent — Onepoint × AWS Hackathon</title>
+<style>
+  :root { --bg:#0b1020; --card:#141b33; --accent:#ff9900; --accent2:#4dabf7; --text:#e8ecf5; --muted:#9aa4bf; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }
+  .deck { height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .slide { display: none; width: min(1000px, 92vw); max-height: 92vh; overflow:auto; padding: 48px 56px; background: var(--card);
+           border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.5); border: 1px solid #23305a; }
+  .slide.active { display: block; animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px);} to { opacity:1; transform:none; } }
+  h1 { font-size: 44px; line-height: 1.1; margin-bottom: 16px; }
+  h2 { font-size: 30px; color: var(--accent); margin-bottom: 22px; }
+  .kicker { color: var(--accent2); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; margin-bottom: 12px; }
+  p, li { font-size: 20px; line-height: 1.5; color: var(--text); }
+  ul { margin: 8px 0 8px 26px; } li { margin: 10px 0; }
+  .muted { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px; }
+  .box { background: #0f1730; border: 1px solid #23305a; border-radius: 12px; padding: 18px 20px; }
+  .box h3 { color: var(--accent2); font-size: 18px; margin-bottom: 8px; }
+  code, .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 16px; background:#0f1730; padding:2px 7px; border-radius:6px; color:#ffd8a8; }
+  .flow { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 17px; line-height: 1.9; color:#cfe3ff; }
+  .pill { display:inline-block; background:#1c2947; color:var(--accent2); border-radius:999px; padding:4px 12px; font-size:14px; margin:4px 6px 0 0; }
+  .big { font-size: 26px; }
+  .foot { position: fixed; bottom: 16px; width: 100%; left:0; text-align:center; color: var(--muted); font-size: 13px; }
+  .nav { position: fixed; bottom: 14px; right: 22px; color: var(--muted); font-size: 13px; }
+  .tag { color: var(--accent); font-weight: 700; }
+  .check { color:#51cf66; font-weight:700; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- 1. Title (~20s) -->
+  <section class="slide active">
+    <div class="kicker">Onepoint × AWS — Build your AI agent with Kiro</div>
+    <h1>Documentation Agent</h1>
+    <p class="big">An AI agent on <span class="tag">Amazon Bedrock AgentCore</span> that keeps a repository's documentation from falling behind — automatically.</p>
+    <p class="muted" style="margin-top:22px;">Docstrings · README · Drift detection · Triggered on every push</p>
+  </section>
+
+  <!-- 2. Problem (~40s) -->
+  <section class="slide">
+    <div class="kicker">The problem</div>
+    <h2>Documentation rots fast</h2>
+    <ul>
+      <li>README files go stale</li>
+      <li>Functions ship with no docstrings</li>
+      <li>Docs drift out of sync with the code</li>
+    </ul>
+    <p class="muted" style="margin-top:18px;">Nobody has time to fix it by hand — so it never gets fixed.</p>
+  </section>
+
+  <!-- 3. Solution (~45s) -->
+  <section class="slide">
+    <div class="kicker">The solution</div>
+    <h2>An agent that documents for you</h2>
+    <div class="grid">
+      <div class="box"><h3>Docstrings</h3><p>Finds functions/classes/modules missing docstrings (via <code>ast</code>) and writes them with Claude on Bedrock.</p></div>
+      <div class="box"><h3>README</h3><p>Generates &amp; updates a project README from every module's purpose + public API.</p></div>
+      <div class="box"><h3>Drift detection</h3><p>Flags docstrings that no longer match the code (e.g. renamed parameters).</p></div>
+      <div class="box"><h3>Human-in-the-loop</h3><p>Never writes to <code>main</code> — it opens a <span class="tag">Pull Request</span> for review.</p></div>
+    </div>
+  </section>
+
+  <!-- 4. Architecture (~60s) -->
+  <section class="slide">
+    <div class="kicker">How it works</div>
+    <h2>Event-driven, chunked, on AWS</h2>
+    <p class="flow">
+      GitHub push → API Gateway → Webhook Lambda (verify HMAC)<br/>
+      &nbsp;&nbsp;→ Orchestrator Lambda (enumerate files, fan out)<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;→ Chunk Lambda × N &nbsp;<span class="muted">(one file each, in parallel)</span><br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ Claude on Bedrock → commit → <span class="tag">1 Pull Request</span>
+    </p>
+    <div style="margin-top:16px;">
+      <span class="pill">Bedrock AgentCore Runtime</span>
+      <span class="pill">Claude (Bedrock Converse)</span>
+      <span class="pill">Lambda fan-out</span>
+      <span class="pill">GitHub REST API</span>
+    </div>
+    <p class="muted" style="margin-top:16px;">One file per request = fast, parallel, conflict-free. The whole project gets documented per push.</p>
+  </section>
+
+  <!-- 5. Live proof (~60s) -->
+  <section class="slide">
+    <div class="kicker">It actually works</div>
+    <h2>Deployed &amp; proven</h2>
+    <ul>
+      <li><span class="check">✓</span> Agent deployed to Bedrock AgentCore &amp; invoked live</li>
+      <li><span class="check">✓</span> A <code>git push</code> auto-opens a documentation PR</li>
+      <li><span class="check">✓</span> Whole project documented — <span class="tag">0 missing docstrings</span></li>
+      <li><span class="check">✓</span> README generated for a repo that had none</li>
+      <li><span class="check">✓</span> 80+ offline unit tests green</li>
+    </ul>
+    <p class="muted" style="margin-top:14px;">Demo repo: <code>pytrh/Atari-Pong</code> — see the agent-authored PRs.</p>
+  </section>
+
+  <!-- 6. Extensible + close (~35s) -->
+  <section class="slide">
+    <div class="kicker">Built to grow</div>
+    <h2>Every capability is a pluggable tool</h2>
+    <p>Each feature is a Strands <code>@tool</code> — new ones plug in without touching existing code:</p>
+    <div style="margin-top:10px;">
+      <span class="pill">architecture diagrams</span>
+      <span class="pill">automatic changelogs</span>
+      <span class="pill">API documentation</span>
+      <span class="pill">GitLab support</span>
+    </div>
+    <h1 style="margin-top:34px; font-size:34px;">From idea → deployed agent, in a day.</h1>
+    <p class="muted" style="margin-top:10px;">Documentation Agent · Onepoint × AWS · Amazon Bedrock AgentCore</p>
+  </section>
+
+</div>
+
+<div class="foot">← / → or Space to navigate · press <b>F</b> for fullscreen</div>
+<div class="nav"><span id="counter">1 / 6</span></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let i = 0;
+  const counter = document.getElementById('counter');
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { show(i + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(i - 1); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen();
+    }
+  });
+  // Click / tap to advance.
+  document.getElementById('deck').addEventListener('click', () => show(i + 1));
+</script>
+</body>
+</html>
