@@ -5,46 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Documentation Agent — Onepoint × AWS Hackathon</title>
 <style>
-  :root { --bg:#0b1020; --card:#141b33; --accent:#ff9900; --accent2:#4dabf7; --text:#e8ecf5; --muted:#9aa4bf; }
+  :root { --bg:#0b1020; --card:#141b33; --accent:#ff9900; --accent2:#4dabf7; --text:#e8ecf5; --muted:#9aa4bf; --line:#2b3a63; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body { background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }
   .deck { height: 100vh; display: flex; align-items: center; justify-content: center; }
-  .slide { display: none; width: min(1000px, 92vw); max-height: 92vh; overflow:auto; padding: 48px 56px; background: var(--card);
+  .slide { display: none; width: min(1100px, 94vw); max-height: 94vh; overflow:auto; padding: 42px 54px; background: var(--card);
            border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.5); border: 1px solid #23305a; }
-  .slide.active { display: block; animation: fade .35s ease; }
-  @keyframes fade { from { opacity: 0; transform: translateY(8px);} to { opacity:1; transform:none; } }
-  h1 { font-size: 44px; line-height: 1.1; margin-bottom: 16px; }
-  h2 { font-size: 30px; color: var(--accent); margin-bottom: 22px; }
-  .kicker { color: var(--accent2); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; margin-bottom: 12px; }
-  p, li { font-size: 20px; line-height: 1.5; color: var(--text); }
-  ul { margin: 8px 0 8px 26px; } li { margin: 10px 0; }
+  .slide.active { display: block; animation: fade .3s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px);} to { opacity:1; transform:none; } }
+  h1 { font-size: 42px; line-height: 1.1; margin-bottom: 14px; }
+  h2 { font-size: 29px; color: var(--accent); margin-bottom: 18px; }
+  .kicker { color: var(--accent2); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; margin-bottom: 10px; }
+  p, li { font-size: 19px; line-height: 1.5; } li { margin: 9px 0 9px 4px; }
+  ul { margin-left: 24px; }
   .muted { color: var(--muted); }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px; }
-  .box { background: #0f1730; border: 1px solid #23305a; border-radius: 12px; padding: 18px 20px; }
-  .box h3 { color: var(--accent2); font-size: 18px; margin-bottom: 8px; }
-  code, .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 16px; background:#0f1730; padding:2px 7px; border-radius:6px; color:#ffd8a8; }
-  .flow { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 17px; line-height: 1.9; color:#cfe3ff; }
+  .big { font-size: 25px; }
+  code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 15px; background:#0f1730; padding:2px 7px; border-radius:6px; color:#ffd8a8; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+  .box { background: #0f1730; border: 1px solid #23305a; border-radius: 12px; padding: 16px 18px; }
+  .box h3 { color: var(--accent2); font-size: 17px; margin-bottom: 6px; }
   .pill { display:inline-block; background:#1c2947; color:var(--accent2); border-radius:999px; padding:4px 12px; font-size:14px; margin:4px 6px 0 0; }
-  .big { font-size: 26px; }
-  .foot { position: fixed; bottom: 16px; width: 100%; left:0; text-align:center; color: var(--muted); font-size: 13px; }
-  .nav { position: fixed; bottom: 14px; right: 22px; color: var(--muted); font-size: 13px; }
   .tag { color: var(--accent); font-weight: 700; }
   .check { color:#51cf66; font-weight:700; }
+  .foot { position: fixed; bottom: 14px; left: 22px; color: var(--muted); font-size: 13px; }
+  .nav { position: fixed; bottom: 14px; right: 22px; color: var(--muted); font-size: 13px; }
+  svg { width: 100%; height: auto; }
+  .lbl { fill: var(--text); font: 600 15px -apple-system, "Segoe UI", sans-serif; }
+  .sub { fill: var(--muted); font: 12px "SF Mono", monospace; }
+  .grp { fill:#0f1730; stroke: var(--line); stroke-width:1.5; }
+  .aws { fill:#12203f; stroke:#35507f; stroke-width:1.5; }
+  .accentbox { fill:#2a1e08; stroke: var(--accent); stroke-width:1.5; }
+  .edge { stroke:#5b6ea8; stroke-width:2; fill:none; }
+  .edgelbl { fill:#9fb3e0; font: 12px "SF Mono", monospace; }
 </style>
 </head>
 <body>
 <div class="deck" id="deck">
 
-  <!-- 1. Title (~20s) -->
+  <!-- 1. Title -->
   <section class="slide active">
     <div class="kicker">Onepoint × AWS — Build your AI agent with Kiro</div>
     <h1>Documentation Agent</h1>
     <p class="big">An AI agent on <span class="tag">Amazon Bedrock AgentCore</span> that keeps a repository's documentation from falling behind — automatically.</p>
-    <p class="muted" style="margin-top:22px;">Docstrings · README · Drift detection · Triggered on every push</p>
+    <p class="muted" style="margin-top:20px;">Docstrings · README · Drift detection · Triggered on every push</p>
   </section>
 
-  <!-- 2. Problem (~40s) -->
+  <!-- 2. Problem -->
   <section class="slide">
     <div class="kicker">The problem</div>
     <h2>Documentation rots fast</h2>
@@ -53,41 +60,121 @@
       <li>Functions ship with no docstrings</li>
       <li>Docs drift out of sync with the code</li>
     </ul>
-    <p class="muted" style="margin-top:18px;">Nobody has time to fix it by hand — so it never gets fixed.</p>
+    <p class="muted" style="margin-top:16px;">Nobody has time to fix it by hand — so it never gets fixed.</p>
   </section>
 
-  <!-- 3. Solution (~45s) -->
+  <!-- 3. Solution -->
   <section class="slide">
     <div class="kicker">The solution</div>
     <h2>An agent that documents for you</h2>
     <div class="grid">
       <div class="box"><h3>Docstrings</h3><p>Finds functions/classes/modules missing docstrings (via <code>ast</code>) and writes them with Claude on Bedrock.</p></div>
-      <div class="box"><h3>README</h3><p>Generates &amp; updates a project README from every module's purpose + public API.</p></div>
-      <div class="box"><h3>Drift detection</h3><p>Flags docstrings that no longer match the code (e.g. renamed parameters).</p></div>
+      <div class="box"><h3>README</h3><p>Generates &amp; refreshes a project README from every module's purpose + public API.</p></div>
+      <div class="box"><h3>Drift detection</h3><p>Flags docstrings inconsistent with the code (renamed params, wrong Returns).</p></div>
       <div class="box"><h3>Human-in-the-loop</h3><p>Never writes to <code>main</code> — it opens a <span class="tag">Pull Request</span> for review.</p></div>
     </div>
   </section>
 
-  <!-- 4. Architecture (~60s) -->
+  <!-- 4. End-to-end architecture -->
   <section class="slide">
-    <div class="kicker">How it works</div>
-    <h2>Event-driven, chunked, on AWS</h2>
-    <p class="flow">
-      GitHub push → API Gateway → Webhook Lambda (verify HMAC)<br/>
-      &nbsp;&nbsp;→ Orchestrator Lambda (enumerate files, fan out)<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;→ Chunk Lambda × N &nbsp;<span class="muted">(one file each, in parallel)</span><br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ Claude on Bedrock → commit → <span class="tag">1 Pull Request</span>
-    </p>
-    <div style="margin-top:16px;">
-      <span class="pill">Bedrock AgentCore Runtime</span>
-      <span class="pill">Claude (Bedrock Converse)</span>
-      <span class="pill">Lambda fan-out</span>
-      <span class="pill">GitHub REST API</span>
-    </div>
-    <p class="muted" style="margin-top:16px;">One file per request = fast, parallel, conflict-free. The whole project gets documented per push.</p>
+    <div class="kicker">How it works — end to end</div>
+    <h2>Event-driven, chunked, serverless</h2>
+    <svg viewBox="0 0 1000 430" role="img" aria-label="End-to-end architecture">
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#5b6ea8"/>
+        </marker>
+      </defs>
+      <rect class="grp" x="20" y="180" width="150" height="70" rx="10"/>
+      <text class="lbl" x="95" y="210" text-anchor="middle">GitHub</text>
+      <text class="sub" x="95" y="230" text-anchor="middle">push / PR webhook</text>
+
+      <rect class="aws" x="220" y="180" width="150" height="70" rx="10"/>
+      <text class="lbl" x="295" y="210" text-anchor="middle">API Gateway</text>
+      <text class="sub" x="295" y="230" text-anchor="middle">HTTPS endpoint</text>
+
+      <rect class="aws" x="420" y="180" width="160" height="70" rx="10"/>
+      <text class="lbl" x="500" y="205" text-anchor="middle">Webhook λ</text>
+      <text class="sub" x="500" y="225" text-anchor="middle">verify HMAC · filter</text>
+
+      <rect class="aws" x="630" y="180" width="160" height="70" rx="10"/>
+      <text class="lbl" x="710" y="205" text-anchor="middle">Orchestrator λ</text>
+      <text class="sub" x="710" y="225" text-anchor="middle">enumerate · fan-out</text>
+
+      <rect class="aws" x="840" y="90" width="140" height="56" rx="10"/>
+      <text class="lbl" x="910" y="113" text-anchor="middle">Chunk λ</text>
+      <text class="sub" x="910" y="131" text-anchor="middle">file 1</text>
+      <rect class="aws" x="840" y="186" width="140" height="56" rx="10"/>
+      <text class="lbl" x="910" y="209" text-anchor="middle">Chunk λ</text>
+      <text class="sub" x="910" y="227" text-anchor="middle">file 2</text>
+      <rect class="aws" x="840" y="282" width="140" height="56" rx="10"/>
+      <text class="lbl" x="910" y="305" text-anchor="middle">Chunk λ</text>
+      <text class="sub" x="910" y="323" text-anchor="middle">file N</text>
+
+      <rect class="accentbox" x="620" y="330" width="180" height="66" rx="10"/>
+      <text class="lbl" x="710" y="357" text-anchor="middle">Amazon Bedrock</text>
+      <text class="sub" x="710" y="377" text-anchor="middle">Claude (Converse)</text>
+
+      <rect class="grp" x="360" y="330" width="180" height="66" rx="10"/>
+      <text class="lbl" x="450" y="357" text-anchor="middle">1 Pull Request</text>
+      <text class="sub" x="450" y="377" text-anchor="middle">human review</text>
+
+      <path class="edge" marker-end="url(#arrow)" d="M170,215 L216,215"/>
+      <path class="edge" marker-end="url(#arrow)" d="M370,215 L416,215"/>
+      <path class="edge" marker-end="url(#arrow)" d="M580,215 L626,215"/>
+      <path class="edge" marker-end="url(#arrow)" d="M790,205 L836,118"/>
+      <path class="edge" marker-end="url(#arrow)" d="M790,215 L836,214"/>
+      <path class="edge" marker-end="url(#arrow)" d="M790,225 L836,310"/>
+      <text class="edgelbl" x="470" y="170" text-anchor="middle">async (Event)</text>
+      <path class="edge" marker-end="url(#arrow)" d="M840,214 C 740,214 740,300 730,326"/>
+      <text class="edgelbl" x="815" y="285" text-anchor="middle">generate</text>
+      <path class="edge" marker-end="url(#arrow)" d="M840,310 C 640,320 560,340 542,352"/>
+      <text class="edgelbl" x="600" y="315" text-anchor="middle">commit · open PR</text>
+    </svg>
+    <p class="muted" style="margin-top:6px;">One file per chunk → parallel &amp; conflict-free. The whole project is documented per push.</p>
   </section>
 
-  <!-- 5. Live proof (~60s) -->
+  <!-- 5. Agent internals -->
+  <section class="slide">
+    <div class="kicker">Inside the agent</div>
+    <h2>Hexagonal agent, pluggable tools</h2>
+    <svg viewBox="0 0 1000 320" role="img" aria-label="Agent internals">
+      <defs>
+        <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#5b6ea8"/>
+        </marker>
+      </defs>
+      <rect class="accentbox" x="30" y="120" width="200" height="80" rx="10"/>
+      <text class="lbl" x="130" y="153" text-anchor="middle">AgentCore Runtime</text>
+      <text class="sub" x="130" y="173" text-anchor="middle">@app.entrypoint</text>
+
+      <rect class="aws" x="290" y="110" width="200" height="100" rx="10"/>
+      <text class="lbl" x="390" y="145" text-anchor="middle">Strands Agent</text>
+      <text class="sub" x="390" y="165" text-anchor="middle">tool-calling loop</text>
+      <text class="sub" x="390" y="183" text-anchor="middle">+ Claude on Bedrock</text>
+
+      <rect class="grp" x="560" y="10"  width="410" height="44" rx="10"/>
+      <text class="lbl" x="765" y="37" text-anchor="middle">analyze · generate_docstrings</text>
+      <rect class="grp" x="560" y="64" width="410" height="44" rx="10"/>
+      <text class="lbl" x="765" y="91" text-anchor="middle">render_documented_source</text>
+      <rect class="grp" x="560" y="118" width="410" height="44" rx="10"/>
+      <text class="lbl" x="765" y="145" text-anchor="middle">detect_doc_drift · generate_project_readme</text>
+      <rect class="grp" x="560" y="172" width="410" height="44" rx="10"/>
+      <text class="lbl" x="765" y="199" text-anchor="middle">list · read · open_pull_request</text>
+      <rect class="grp" x="560" y="226" width="410" height="44" rx="10" style="stroke-dasharray:5 4"/>
+      <text class="lbl" x="765" y="248" text-anchor="middle" style="fill:#9aa4bf">future: diagrams · changelogs · API docs</text>
+      <text class="sub" x="765" y="264" text-anchor="middle">just add a @tool</text>
+
+      <path class="edge" marker-end="url(#arrow2)" d="M230,160 L286,160"/>
+      <path class="edge" marker-end="url(#arrow2)" d="M490,140 L556,34"/>
+      <path class="edge" marker-end="url(#arrow2)" d="M490,150 L556,88"/>
+      <path class="edge" marker-end="url(#arrow2)" d="M490,165 L556,140"/>
+      <path class="edge" marker-end="url(#arrow2)" d="M490,180 L556,194"/>
+    </svg>
+    <p class="muted">Domain logic (<code>ast</code> analyzer, renderer, drift, README) sits behind ports; adapters (Bedrock, GitHub REST) are swappable — every capability is a Strands <code>@tool</code>.</p>
+  </section>
+
+  <!-- 6. Live proof -->
   <section class="slide">
     <div class="kicker">It actually works</div>
     <h2>Deployed &amp; proven</h2>
@@ -96,51 +183,39 @@
       <li><span class="check">✓</span> A <code>git push</code> auto-opens a documentation PR</li>
       <li><span class="check">✓</span> Whole project documented — <span class="tag">0 missing docstrings</span></li>
       <li><span class="check">✓</span> README generated for a repo that had none</li>
+      <li><span class="check">✓</span> Drift detection catches renamed params &amp; wrong Returns</li>
       <li><span class="check">✓</span> 80+ offline unit tests green</li>
     </ul>
-    <p class="muted" style="margin-top:14px;">Demo repo: <code>pytrh/Atari-Pong</code> — see the agent-authored PRs.</p>
   </section>
 
-  <!-- 6. Extensible + close (~35s) -->
+  <!-- 7. Extensible + close -->
   <section class="slide">
     <div class="kicker">Built to grow</div>
-    <h2>Every capability is a pluggable tool</h2>
-    <p>Each feature is a Strands <code>@tool</code> — new ones plug in without touching existing code:</p>
-    <div style="margin-top:10px;">
-      <span class="pill">architecture diagrams</span>
-      <span class="pill">automatic changelogs</span>
-      <span class="pill">API documentation</span>
-      <span class="pill">GitLab support</span>
+    <h2>From idea → deployed agent, in a day</h2>
+    <div style="margin-top:6px;">
+      <span class="pill">Bedrock AgentCore</span><span class="pill">Lambda fan-out</span>
+      <span class="pill">API Gateway</span><span class="pill">GitHub REST</span><span class="pill">Strands @tool</span>
     </div>
-    <h1 style="margin-top:34px; font-size:34px;">From idea → deployed agent, in a day.</h1>
+    <h1 style="margin-top:30px; font-size:32px;">Push code → documented Pull Request. Automatically.</h1>
     <p class="muted" style="margin-top:10px;">Documentation Agent · Onepoint × AWS · Amazon Bedrock AgentCore</p>
   </section>
 
 </div>
 
-<div class="foot">← / → or Space to navigate · press <b>F</b> for fullscreen</div>
-<div class="nav"><span id="counter">1 / 6</span></div>
+<div class="foot">← / → · Space · <b>F</b> fullscreen</div>
+<div class="nav"><span id="counter">1 / 7</span></div>
 
 <script>
   const slides = Array.from(document.querySelectorAll('.slide'));
-  let i = 0;
-  const counter = document.getElementById('counter');
-  function show(n) {
-    i = Math.max(0, Math.min(slides.length - 1, n));
-    slides.forEach((s, k) => s.classList.toggle('active', k === i));
-    counter.textContent = (i + 1) + ' / ' + slides.length;
-  }
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { show(i + 1); e.preventDefault(); }
-    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(i - 1); }
-    else if (e.key === 'Home') { show(0); }
-    else if (e.key === 'End') { show(slides.length - 1); }
-    else if (e.key.toLowerCase() === 'f') {
-      if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen();
-    }
+  let i = 0; const counter = document.getElementById('counter');
+  function show(n){ i=Math.max(0,Math.min(slides.length-1,n)); slides.forEach((s,k)=>s.classList.toggle('active',k===i)); counter.textContent=(i+1)+' / '+slides.length; }
+  document.addEventListener('keydown',(e)=>{
+    if(['ArrowRight',' ','PageDown'].includes(e.key)){show(i+1);e.preventDefault();}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){show(i-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(slides.length-1);}
+    else if(e.key.toLowerCase()==='f'){ if(!document.fullscreenElement)document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
   });
-  // Click / tap to advance.
-  document.getElementById('deck').addEventListener('click', () => show(i + 1));
+  document.getElementById('deck').addEventListener('click',()=>show(i+1));
 </script>
 </body>
 </html>
