@@ -1,3 +1,8 @@
+"""Training script for DQN agent on LunarLander environment with checkpointing and visualization.
+
+This module trains a Double DQN agent with prioritized experience replay on the LunarLander-v3 environment. It includes functionality for saving agent policies at regular intervals, plotting training progress, and rendering episodes during training. The script uses checkpointing to save and restore training progress.
+"""
+
 import datetime
 import gymnasium as gym
 import numpy as np
