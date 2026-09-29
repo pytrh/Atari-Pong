@@ -1,3 +1,8 @@
+"""Training script for a Double Deep Q-Network (DDQN) agent on the LunarLander-v3 environment.
+
+This module sets up and configures a DQN agent with prioritized experience replay for training on the Lunar Lander task. It includes configuration for saving policies, plotting training progress, and various hyperparameters for the learning algorithm.
+"""
+
 import datetime
 import gymnasium as gym
 import numpy as np
